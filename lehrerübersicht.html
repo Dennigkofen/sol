@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL Stundenplan</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 24px;
+            color: #fff;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 48px 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .header::before {
+            content: '🏆';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #ffd700;
+            text-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .schedule-container {
+            padding: 40px;
+        }
+        
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 120px repeat(5, 1fr);
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .time-slot, .day-header, .lesson-cell {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .day-header {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .time-slot {
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .pause-break {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 152, 0, 0.3) 100%);
+            color: #ffc107;
+            font-weight: 600;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            box-shadow: 0 8px 16px rgba(255, 193, 7, 0.2);
+        }
+        
+        .mittag-break {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.3) 0%, rgba(103, 58, 183, 0.3) 100%);
+            color: #e1bee7;
+            font-weight: 600;
+            border: 1px solid rgba(156, 39, 176, 0.4);
+            box-shadow: 0 8px 16px rgba(156, 39, 176, 0.2);
+        }
+        
+        .lesson-cell {
+            cursor: pointer;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            text-align: center;
+            padding: 16px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .lesson-cell:hover {
+            border-color: rgba(255, 215, 0, 0.6);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .lesson-cell.filled {
+            border: 2px solid transparent;
+            color: white;
+            border-style: solid;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lesson-cell.filled:hover {
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* SOL Fach-Farben */
+        .sol-französisch {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.9) 0%, rgba(211, 47, 47, 0.9) 100%);
+        }
+        
+        .sol-deutsch {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(56, 142, 60, 0.9) 100%);
+        }
+        
+        .sol-englisch {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.9) 0%, rgba(25, 118, 210, 0.9) 100%);
+        }
+        
+        .sol-nt {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.9) 0%, rgba(245, 124, 0, 0.9) 100%);
+        }
+        
+        .sol-rzg {
+            background: linear-gradient(135deg, rgba(103, 58, 183, 0.9) 0%, rgba(81, 45, 168, 0.9) 100%);
+        }
+        
+        .sol-mathematik {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.9) 0%, rgba(123, 31, 162, 0.9) 100%);
+        }
+        
+        .sol-default {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 193, 7, 0.9) 100%);
+            color: #1a1a1a;
+        }
+        
+        .lesson-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .lesson-main-label {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .lesson-title {
+            font-weight: 500;
+            font-size: 0.8rem;
+            letter-spacing: 0.025em;
+            opacity: 0.9;
+            text-align: center;
+        }
+        
+        .lesson-subject {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .break-cell {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            cursor: not-allowed;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+        }
+        
+        .break-cell:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .blocked-cell {
+            cursor: not-allowed;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .blocked-cell:hover {
+            transform: none;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Fachspezifische Farben */
+        .subject-klassenwettkampf {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(56, 142, 60, 0.25) 100%);
+            color: #a5d6a7;
+            border: 2px solid rgba(76, 175, 80, 0.4);
+        }
+        
+        .subject-rzg {
+            background: linear-gradient(135deg, rgba(3, 169, 244, 0.25) 0%, rgba(2, 136, 209, 0.25) 100%);
+            color: #81d4fa;
+            border: 2px solid rgba(3, 169, 244, 0.4);
+        }
+        
+        .subject-nt-mi {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(245, 124, 0, 0.25) 100%);
+            color: #ffcc80;
+            border: 2px solid rgba(255, 152, 0, 0.4);
+        }
+        
+        .subject-wah {
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.25) 0%, rgba(194, 24, 91, 0.25) 100%);
+            color: #f8bbd9;
+            border: 2px solid rgba(233, 30, 99, 0.4);
+        }
+        
+        .subject-sport {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(46, 125, 50, 0.25) 100%);
+            color: #c8e6c9;
+            border: 2px solid rgba(76, 175, 80, 0.4);
+        }
+        
+        .subject-erg {
+            background: linear-gradient(135deg, rgba(121, 85, 72, 0.25) 0%, rgba(93, 64, 55, 0.25) 100%);
+            color: #d7ccc8;
+            border: 2px solid rgba(121, 85, 72, 0.4);
+        }
+        
+        .subject-musik {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.25) 0%, rgba(123, 31, 162, 0.25) 100%);
+            color: #e1bee7;
+            border: 2px solid rgba(156, 39, 176, 0.4);
+        }
+        
+        .subject-bg {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.25) 0%, rgba(230, 74, 25, 0.25) 100%);
+            color: #ffab91;
+            border: 2px solid rgba(255, 87, 34, 0.4);
+        }
+        
+        .subject-ttg-txg {
+            background: linear-gradient(135deg, rgba(96, 125, 139, 0.25) 0%, rgba(69, 90, 100, 0.25) 100%);
+            color: #b0bec5;
+            border: 2px solid rgba(96, 125, 139, 0.4);
+        }
+        
+        .edit-btn {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(33, 150, 243, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+        
+        .edit-btn:hover {
+            background: rgba(25, 118, 210, 1);
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
+        }
+        
+        .lesson-cell.filled:hover .edit-btn {
+            display: flex;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(244, 67, 54, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+        }
+        
+        .delete-btn:hover {
+            background: rgba(211, 47, 47, 1);
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(244, 67, 54, 0.6);
+        }
+        
+        .lesson-cell.filled:hover .delete-btn {
+            display: flex;
+        }
+        
+        .add-lesson-form {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 32px;
+            border-radius: 20px;
+            margin-top: 32px;
+            display: none;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .add-lesson-form.active {
+            display: block;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(32px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+        
+        .add-lesson-form h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #ffd700;
+            letter-spacing: -0.01em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-group select {
+            cursor: pointer;
+        }
+        
+        .form-group select option {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-group input[type="file"] {
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-family: 'Inter', sans-serif;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-group input[type="file"]:hover {
+            border-color: rgba(255, 215, 0, 0.6);
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+        }
+        
+        .form-group input[type="file"]::file-selector-button {
+            background: linear-gradient(135deg, #ffd700 0%, #ffc107 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-group input[type="file"]::file-selector-button:hover {
+            background: linear-gradient(135deg, #ffc107 0%, #ffd700 100%);
+            transform: translateY(-1px);
+        }
+        
+        .file-list {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .file-item {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+        
+        .file-remove {
+            background: rgba(244, 67, 54, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .file-remove:hover {
+            background: rgba(211, 47, 47, 1);
+            transform: scale(1.1);
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd700 0%, #ffc107 100%);
+            color: #1a1a1a;
+            border: 2px solid transparent;
+            box-shadow: 0 8px 16px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, #ffc107 0%, #ffd700 100%);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .empty-cell-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-style: normal;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+        
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 32px;
+            border-radius: 20px;
+            margin-top: 32px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .legend h3 {
+            margin-bottom: 24px;
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 16px;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        
+        .legend-item span {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        .legend p {
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            line-height: 1.6;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            border-left: 4px solid rgba(255, 215, 0, 0.6);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.7);
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+            
+            .schedule-container {
+                padding: 24px 20px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 100px repeat(5, 1fr);
+                gap: 4px;
+                padding: 16px;
+            }
+            
+            .time-slot, .day-header, .lesson-cell {
+                min-height: 60px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>SOL Stundenplan</h1>
+                <p>Selbstorganisiertes Lernen – Premium Planung</p>
+            </div>
+        </div>
+        
+        <div class="schedule-container">
+            <div class="schedule-grid" id="scheduleGrid">
+                <!-- Grid wird dynamisch gefüllt -->
+            </div>
+            
+            <div class="add-lesson-form" id="addLessonForm">
+                <h3>Neue SOL-Lektion hinzufügen</h3>
+                <div class="form-group">
+                    <label for="lessonTitle">Titel der Lektion</label>
+                    <input type="text" id="lessonTitle" placeholder="z.B. Mathematik – Algebra">
+                </div>
+                <div class="form-group">
+                    <label for="lessonSubject">Fach</label>
+                    <select id="lessonSubject">
+                        <option value="">Fach auswählen</option>
+                        <option value="Französisch">Französisch</option>
+                        <option value="Deutsch">Deutsch</option>
+                        <option value="Englisch">Englisch</option>
+                        <option value="NT">NT</option>
+                        <option value="RZG">RZG</option>
+                        <option value="Mathematik">Mathematik</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="lessonNotes">Zusätzliche Informationen</label>
+                    <textarea id="lessonNotes" rows="3" placeholder="Arbeitsauftrag, Hinweise, Links..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="lessonFiles">Dateien (optional)</label>
+                    <input type="file" id="lessonFiles" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt,.xlsx,.pptx">
+                    <div id="fileList" class="file-list"></div>
+                </div>
+                <div class="form-buttons">
+                    <button class="btn btn-secondary" onclick="cancelAddLesson()">Abbrechen</button>
+                    <button class="btn btn-primary" onclick="saveLesson()">Speichern</button>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <h3>Legende</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 193, 7, 0.9) 100%);"></div>
+                    <span>SOL-Lektion geplant</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="border: 2px dashed rgba(255, 255, 255, 0.3); background: transparent;"></div>
+                    <span>Verfügbare Zeitslots</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 152, 0, 0.3) 100%); border: 1px solid rgba(255, 193, 7, 0.4);"></div>
+                    <span>Pause – keine Einträge möglich</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.3) 0%, rgba(103, 58, 183, 0.3) 100%); border: 1px solid rgba(156, 39, 176, 0.4);"></div>
+                    <span>Mittagspause – keine Einträge möglich</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(233, 30, 99, 0.2) 100%); border: 2px solid rgba(244, 67, 54, 0.3);"></div>
+                    <span>Regulärer Unterricht – keine SOL möglich</span>
+                </div>
+                <p>
+                    💡 <strong>Bedienung:</strong> Klicken Sie auf verfügbare Zeitslots, um SOL-Lektionen hinzuzufügen. 
+                    Fahren Sie über geplante Lektionen, um diese zu bearbeiten oder zu löschen.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+        const timeSlots = [
+            '07:30-08:15', 
+            '08:20-09:05', 
+            '09:10-09:55', 
+            { time: '09:55-10:20', type: 'pause', label: 'PAUSE' },
+            '10:20-11:05', 
+            '11:10-11:55', 
+            { time: '11:55-13:50', type: 'mittag', label: 'MITTAG' },
+            '13:50-14:35', 
+            '14:40-15:25', 
+            '15:40-16:25', 
+            '16:30-17:15'
+        ];
+        
+        // SOL Fachfarben-Mapping
+        const solSubjectColors = {
+            'Französisch': 'sol-französisch',
+            'Deutsch': 'sol-deutsch',
+            'Englisch': 'sol-englisch',
+            'NT': 'sol-nt',
+            'RZG': 'sol-rzg',
+            'Mathematik': 'sol-mathematik'
+        };
+        
+        // Fachfarben-Mapping für regulären Unterricht
+        const subjectColors = {
+            'Klassenwettkampf': 'subject-klassenwettkampf',
+            'RZG': 'subject-rzg',
+            'NT / MI': 'subject-nt-mi',
+            'WAH': 'subject-wah',
+            'Sport': 'subject-sport',
+            'ERG': 'subject-erg',
+            'Musik': 'subject-musik',
+            'BG': 'subject-bg',
+            'TTG / TxG': 'subject-ttg-txg'
+        };
+        
+        // Gesperrte Zeitslots pro Tag
+        const blockedSlots = {
+            'Montag': {
+                '07:30-08:15': 'Klassenwettkampf',
+                '13:50-14:35': 'RZG',
+                '14:40-15:25': 'RZG'
+            },
+            'Dienstag': {
+                '08:20-09:05': 'NT / MI',
+                '09:10-09:55': 'NT / MI',
+                '13:50-14:35': 'WAH',
+                '14:40-15:25': 'WAH'
+            },
+            'Mittwoch': {
+                '10:20-11:05': 'Sport',
+                '11:10-11:55': 'ERG'
+            },
+            'Donnerstag': {
+                '13:50-14:35': 'Musik',
+                '14:40-15:25': 'Musik'
+            },
+            'Freitag': {
+                '10:20-11:05': 'Sport',
+                '11:10-11:55': 'Sport',
+                '13:50-14:35': 'BG',
+                '14:40-15:25': 'BG',
+                '15:40-16:25': 'TTG / TxG',
+                '16:30-17:15': 'TTG / TxG'
+            }
+        };
+        
+        let lessons = {};
+        let selectedFiles = [];
+        let currentEditCell = null;
+        let isEditMode = false;
+        
+        function initializeSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            
+            // Event listener for file input
+            document.getElementById('lessonFiles').addEventListener('change', handleFileSelection);
+            
+            // Empty corner cell
+            const cornerCell = document.createElement('div');
+            cornerCell.className = 'time-slot';
+            cornerCell.style.background = 'rgba(255, 255, 255, 0.15)';
+            grid.appendChild(cornerCell);
+            
+            // Day headers
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = day;
+                grid.appendChild(dayHeader);
+            });
+            
+            // Time slots and lesson cells
+            timeSlots.forEach(timeSlot => {
+                const isBreak = typeof timeSlot === 'object';
+                const time = isBreak ? timeSlot.time : timeSlot;
+                
+                // Time slot header
+                const timeHeader = document.createElement('div');
+                if (isBreak) {
+                    timeHeader.className = timeSlot.type === 'pause' ? 'time-slot pause-break' : 'time-slot mittag-break';
+                    timeHeader.textContent = timeSlot.label;
+                } else {
+                    timeHeader.className = 'time-slot';
+                    timeHeader.textContent = time;
+                }
+                grid.appendChild(timeHeader);
+                
+                // Lesson cells for each day
+                days.forEach(day => {
+                    const cell = document.createElement('div');
+                    
+                    if (isBreak) {
+                        // Break cells - nicht klickbar
+                        cell.className = 'lesson-cell break-cell';
+                        cell.textContent = timeSlot.label;
+                    } else {
+                        // Check if this slot is blocked for this day
+                        const isBlocked = blockedSlots[day] && blockedSlots[day][time];
+                        
+                        if (isBlocked) {
+                            // Blocked cells - regulärer Unterricht
+                            const subjectName = blockedSlots[day][time];
+                            const colorClass = subjectColors[subjectName] || 'blocked-cell';
+                            cell.className = `lesson-cell blocked-cell ${colorClass}`;
+                            cell.textContent = subjectName;
+                        } else {
+                            // Regular lesson cells
+                            cell.className = 'lesson-cell';
+                            cell.dataset.day = day;
+                            cell.dataset.time = time;
+                            
+                            const emptyText = document.createElement('div');
+                            emptyText.className = 'empty-cell-text';
+                            emptyText.textContent = '+ SOL hinzufügen';
+                            cell.appendChild(emptyText);
+                            
+                            cell.addEventListener('click', (e) => {
+                                if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                    openAddLessonForm(day, time);
+                                }
+                            });
+                        }
+                    }
+                    
+                    grid.appendChild(cell);
+                });
+            });
+        }
+        
+        function openAddLessonForm(day, time) {
+            const cell = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
+            if (cell.classList.contains('filled') && !isEditMode) return;
+            
+            currentEditCell = { day, time };
+            
+            // Wenn im Edit-Modus, Daten laden
+            if (isEditMode) {
+                const lessonKey = `${day}-${time}`;
+                const lesson = lessons[lessonKey];
+                if (lesson) {
+                    document.getElementById('lessonTitle').value = lesson.title || '';
+                    document.getElementById('lessonSubject').value = lesson.subject || '';
+                    document.getElementById('lessonNotes').value = lesson.notes || '';
+                    selectedFiles = lesson.files || [];
+                    updateFileList();
+                }
+                isEditMode = false;
+            } else {
+                // Neue Lektion
+                document.getElementById('lessonTitle').value = '';
+                document.getElementById('lessonSubject').value = '';
+                document.getElementById('lessonNotes').value = '';
+                selectedFiles = [];
+                updateFileList();
+            }
+            
+            document.getElementById('addLessonForm').classList.add('active');
+            document.getElementById('lessonTitle').focus();
+        }
+        
+        function editLesson(day, time) {
+            isEditMode = true;
+            openAddLessonForm(day, time);
+        }
+        
+        function handleFileSelection(event) {
+            const files = Array.from(event.target.files);
+            selectedFiles = [...selectedFiles, ...files];
+            updateFileList();
+            event.target.value = ''; // Reset input
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        }
+        
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>📎 ${file.name}</span>
+                    <button class="file-remove" onclick="removeFile(${index})" title="Datei entfernen">×</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        function cancelAddLesson() {
+            document.getElementById('addLessonForm').classList.remove('active');
+            document.getElementById('lessonTitle').value = '';
+            document.getElementById('lessonSubject').value = '';
+            document.getElementById('lessonNotes').value = '';
+            selectedFiles = [];
+            updateFileList();
+            currentEditCell = null;
+            isEditMode = false;
+        }
+        
+        function saveLesson() {
+            if (!currentEditCell) return;
+            
+            const title = document.getElementById('lessonTitle').value.trim();
+            const subject = document.getElementById('lessonSubject').value;
+            const notes = document.getElementById('lessonNotes').value.trim();
+            
+            const lessonKey = `${currentEditCell.day}-${currentEditCell.time}`;
+            lessons[lessonKey] = {
+                title: title || 'SOL',
+                subject,
+                notes,
+                files: [...selectedFiles],
+                day: currentEditCell.day,
+                time: currentEditCell.time
+            };
+            
+            updateCell(currentEditCell.day, currentEditCell.time);
+            cancelAddLesson();
+        }
+        
+        function updateCell(day, time) {
+            const cell = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
+            const lessonKey = `${day}-${time}`;
+            const lesson = lessons[lessonKey];
+            
+            if (lesson) {
+                // Fachfarbe bestimmen
+                const colorClass = solSubjectColors[lesson.subject] || 'sol-default';
+                cell.className = `lesson-cell filled ${colorClass}`;
+                
+                cell.innerHTML = `
+                    <div class="lesson-content">
+                        <div class="lesson-main-label">SOL</div>
+                        ${lesson.title && lesson.title !== 'SOL' ? `<div class="lesson-title">${lesson.title}</div>` : ''}
+                        ${lesson.subject ? `<div class="lesson-subject">${lesson.subject}</div>` : ''}
+                    </div>
+                    <button class="edit-btn" onclick="editLesson('${day}', '${time}')" title="Lektion bearbeiten">✏</button>
+                    <button class="delete-btn" onclick="deleteLesson('${day}', '${time}')" title="Lektion löschen">×</button>
+                `;
+            } else {
+                cell.classList.remove('filled');
+                cell.className = 'lesson-cell';
+                cell.innerHTML = '<div class="empty-cell-text">+ SOL hinzufügen</div>';
+            }
+        }
+        
+        function deleteLesson(day, time) {
+            if (confirm('Möchten Sie diese SOL-Lektion wirklich löschen?')) {
+                const lessonKey = `${day}-${time}`;
+                delete lessons[lessonKey];
+                updateCell(day, time);
+            }
+        }
+        
+        // Initialize the schedule when page loads
+        document.addEventListener('DOMContentLoaded', initializeSchedule);
+    </script>
+</body>
+</html>
