@@ -110,6 +110,8 @@
             font-family: monospace;
             font-size: 0.8rem;
             white-space: pre-line;
+            max-height: 200px;
+            overflow-y: auto;
         }
         
         .schedule-container {
@@ -227,7 +229,6 @@
             transform: translateY(-2px);
         }
         
-        /* SOL Fach-Farben für Lehrer-Vorgaben */
         .sol-französisch {
             background: linear-gradient(135deg, rgba(244, 67, 54, 0.9) 0%, rgba(211, 47, 47, 0.9) 100%);
         }
@@ -324,7 +325,6 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
         
-        /* Fachspezifische Farben für regulären Unterricht */
         .subject-klassenwettkampf {
             background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(56, 142, 60, 0.25) 100%);
             color: #a5d6a7;
@@ -377,6 +377,232 @@
             background: linear-gradient(135deg, rgba(96, 125, 139, 0.25) 0%, rgba(69, 90, 100, 0.25) 100%);
             color: #b0bec5;
             border: 2px solid rgba(96, 125, 139, 0.4);
+        }
+        
+        .edit-btn, .delete-btn {
+            position: absolute;
+            background: rgba(33, 150, 243, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .edit-btn {
+            top: 8px;
+            left: 8px;
+        }
+        
+        .delete-btn {
+            top: 8px;
+            right: 8px;
+            background: rgba(244, 67, 54, 0.95);
+        }
+        
+        .edit-btn:hover {
+            background: rgba(25, 118, 210, 1);
+            transform: scale(1.1);
+        }
+        
+        .delete-btn:hover {
+            background: rgba(211, 47, 47, 1);
+            transform: scale(1.1);
+        }
+        
+        .lesson-cell.student-planned:hover .edit-btn,
+        .lesson-cell.student-planned:hover .delete-btn {
+            display: flex;
+        }
+        
+        .files-btn {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(76, 175, 80, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .files-btn:hover {
+            background: rgba(56, 142, 60, 1);
+            transform: scale(1.1);
+        }
+        
+        .lesson-cell.teacher-defined.has-files:hover .files-btn {
+            display: flex;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.15);
+            margin: 5% auto;
+            padding: 32px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(33, 150, 243, 0.6);
+            box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-group select {
+            cursor: pointer;
+        }
+        
+        .form-group select option {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(33, 150, 243, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .close {
+            color: rgba(255, 255, 255, 0.7);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            color: #fff;
+        }
+        
+        .file-list {
+            margin-top: 16px;
+        }
+        
+        .file-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
         }
         
         .legend {
@@ -461,7 +687,68 @@
         </div>
     </div>
 
+    <!-- Modal für SOL-Planung -->
+    <div id="planModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePlanModal()">&times;</span>
+            <h3>SOL-Lektion planen</h3>
+            <p id="modalTimeSlot" style="margin-bottom: 16px; opacity: 0.8;"></p>
+            
+            <div class="form-group">
+                <label for="lessonTitle">Was möchtest du bearbeiten?</label>
+                <input type="text" id="lessonTitle" placeholder="z.B. Mathematik Übungen, Französisch Vokabeln...">
+            </div>
+            
+            <div class="form-group">
+                <label for="lessonSubject">Fach</label>
+                <select id="lessonSubject">
+                    <option value="">Fach auswählen</option>
+                    <option value="Französisch">Französisch</option>
+                    <option value="Deutsch">Deutsch</option>
+                    <option value="Englisch">Englisch</option>
+                    <option value="NT">NT</option>
+                    <option value="RZG">RZG</option>
+                    <option value="Mathematik">Mathematik</option>
+                    <option value="Sonstiges">Sonstiges</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="lessonNotes">Meine Notizen & Ziele</label>
+                <textarea id="lessonNotes" rows="3" placeholder="Was sind deine Ziele für diese Stunde? Welche Aufgaben willst du erledigen?"></textarea>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closePlanModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveStudentPlan()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Dateien -->
+    <div id="filesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFilesModal()">&times;</span>
+            <h3>Verfügbare Dateien</h3>
+            <p id="filesModalTimeSlot" style="margin-bottom: 16px; opacity: 0.8;"></p>
+            <div id="filesList" class="file-list">
+                <!-- Dateien werden hier angezeigt -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
+        // Firebase Konfiguration
+        const firebaseConfig = {
+            databaseURL: "https://wortartenspiele-default-rtdb.europe-west1.firebasedatabase.app/"
+        };
+        
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
         // Globale Variablen
         const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
         const timeSlots = [
@@ -477,6 +764,16 @@
             '15:40-16:25', 
             '16:30-17:15'
         ];
+        
+        // SOL Fachfarben-Mapping
+        const solSubjectColors = {
+            'Französisch': 'sol-französisch',
+            'Deutsch': 'sol-deutsch',
+            'Englisch': 'sol-englisch',
+            'NT': 'sol-nt',
+            'RZG': 'sol-rzg',
+            'Mathematik': 'sol-mathematik'
+        };
         
         // Gesperrte Zeitslots pro Tag
         const blockedSlots = {
@@ -522,12 +819,114 @@
             'TTG / TxG': 'subject-ttg-txg'
         };
         
+        let teacherLessons = {};
+        let studentPlans = {};
+        let currentStudentId = '';
+        let currentPlanCell = null;
+        let currentFilesCell = null;
         let debugInfo = '';
         
         function updateDebugInfo(message) {
             debugInfo += new Date().toLocaleTimeString() + ': ' + message + '\n';
             document.getElementById('debugInfo').textContent = debugInfo;
             console.log(message);
+        }
+        
+        function getStudentId() {
+            const studentName = document.getElementById('studentName').value.trim();
+            if (studentName) {
+                return studentName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            }
+            
+            let studentId = localStorage.getItem('sol_student_id');
+            if (!studentId) {
+                studentId = 'student_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('sol_student_id', studentId);
+            }
+            return studentId;
+        }
+        
+        function saveStudentName() {
+            const studentName = document.getElementById('studentName').value.trim();
+            updateDebugInfo(`Speichere Schülername: ${studentName}`);
+            
+            if (studentName) {
+                localStorage.setItem('sol_student_name', studentName);
+                currentStudentId = getStudentId();
+                updateDebugInfo(`Neue Student ID: ${currentStudentId}`);
+                loadStudentPlans();
+            }
+        }
+        
+        function loadStudentName() {
+            const savedName = localStorage.getItem('sol_student_name');
+            updateDebugInfo(`Lade Schülername: ${savedName}`);
+            
+            if (savedName) {
+                document.getElementById('studentName').value = savedName;
+                currentStudentId = getStudentId();
+                updateDebugInfo(`Student ID gesetzt: ${currentStudentId}`);
+            }
+        }
+        
+        function loadTeacherLessons() {
+            updateDebugInfo('Lade Lehrer-Lektionen...');
+            
+            database.ref('sol-stundenplan').on('value', (snapshot) => {
+                const data = snapshot.val();
+                teacherLessons = data || {};
+                updateDebugInfo(`Lehrer-Lektionen geladen: ${Object.keys(teacherLessons).length} Einträge`);
+                renderSchedule();
+            }, (error) => {
+                updateDebugInfo(`FEHLER beim Laden der Lehrer-Lektionen: ${error.message}`);
+            });
+        }
+        
+        function saveStudentPlanToFirebase(lessonKey, planData) {
+            const studentId = getStudentId();
+            updateDebugInfo(`Speichere Schülerplanung: ${lessonKey}`);
+            
+            database.ref(`student-plans/${studentId}/${lessonKey}`).set(planData)
+                .then(() => {
+                    updateDebugInfo('Schülerplanung erfolgreich gespeichert');
+                })
+                .catch((error) => {
+                    updateDebugInfo(`FEHLER beim Speichern: ${error.message}`);
+                    alert('Fehler beim Speichern deiner Planung. Bitte versuche es erneut.');
+                });
+        }
+        
+        function deleteStudentPlanFromFirebase(lessonKey) {
+            const studentId = getStudentId();
+            updateDebugInfo(`Lösche Schülerplanung: ${lessonKey}`);
+            
+            database.ref(`student-plans/${studentId}/${lessonKey}`).remove()
+                .then(() => {
+                    updateDebugInfo('Schülerplanung erfolgreich gelöscht');
+                })
+                .catch((error) => {
+                    updateDebugInfo(`FEHLER beim Löschen: ${error.message}`);
+                    alert('Fehler beim Löschen deiner Planung. Bitte versuche es erneut.');
+                });
+        }
+        
+        function loadStudentPlans() {
+            const studentId = getStudentId();
+            if (!studentId) {
+                updateDebugInfo('Keine Student ID verfügbar');
+                return;
+            }
+            
+            updateDebugInfo(`Lade Schüler-Planungen für: ${studentId}`);
+            
+            database.ref(`student-plans/${studentId}`).on('value', (snapshot) => {
+                const data = snapshot.val();
+                studentPlans = data || {};
+                updateDebugInfo(`Schüler-Planungen geladen: ${Object.keys(studentPlans).length} Einträge`);
+                renderSchedule();
+            }, (error) => {
+                updateDebugInfo(`FEHLER beim Laden der Schüler-Planungen: ${error.message}`);
+            });
         }
         
         function createScheduleGrid() {
@@ -539,16 +938,13 @@
                 return;
             }
             
-            // Grid leeren
             grid.innerHTML = '';
             
-            // Empty corner cell
             const cornerCell = document.createElement('div');
             cornerCell.className = 'time-slot';
             cornerCell.style.background = 'rgba(255, 255, 255, 0.15)';
             grid.appendChild(cornerCell);
             
-            // Day headers
             days.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'day-header';
@@ -556,12 +952,10 @@
                 grid.appendChild(dayHeader);
             });
             
-            // Time slots and lesson cells
             timeSlots.forEach(timeSlot => {
                 const isBreak = typeof timeSlot === 'object';
                 const time = isBreak ? timeSlot.time : timeSlot;
                 
-                // Time slot header
                 const timeHeader = document.createElement('div');
                 if (isBreak) {
                     timeHeader.className = timeSlot.type === 'pause' ? 'time-slot pause-break' : 'time-slot mittag-break';
@@ -572,39 +966,29 @@
                 }
                 grid.appendChild(timeHeader);
                 
-                // Lesson cells for each day
                 days.forEach(day => {
                     const cell = document.createElement('div');
                     cell.dataset.day = day;
                     cell.dataset.time = time;
                     
                     if (isBreak) {
-                        // Break cells
                         cell.className = 'lesson-cell break-cell';
                         cell.textContent = timeSlot.label;
                     } else {
-                        // Check if this slot is blocked for this day
                         const isBlocked = blockedSlots[day] && blockedSlots[day][time];
                         
                         if (isBlocked) {
-                            // Blocked cells - regulärer Unterricht
                             const subjectName = blockedSlots[day][time];
                             const colorClass = subjectColors[subjectName] || 'blocked-cell';
                             cell.className = `lesson-cell blocked-cell ${colorClass}`;
                             cell.textContent = subjectName;
                         } else {
-                            // SOL cells - editable by students
-                            cell.className = 'lesson-cell empty-sol';
-                            cell.innerHTML = `
-                                <div class="lesson-content">
-                                    <div class="lesson-main-label" style="opacity: 0.7;">SOL</div>
-                                    <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px;">Klicken zum Planen</div>
-                                </div>
-                            `;
+                            cell.className = 'lesson-cell editable';
                             
-                            cell.addEventListener('click', () => {
-                                updateDebugInfo(`Geklickt auf: ${day} ${time}`);
-                                alert(`SOL-Planung für ${day}, ${time}\n\nHier würde das Planungs-Modal geöffnet werden.`);
+                            cell.addEventListener('click', (e) => {
+                                if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn') && !e.target.closest('.files-btn')) {
+                                    openPlanModal(day, time);
+                                }
                             });
                         }
                     }
@@ -616,11 +1000,207 @@
             updateDebugInfo(`Grid erstellt: ${grid.children.length} Elemente`);
         }
         
-        // Initialisierung
+        function renderSchedule() {
+            updateDebugInfo('Rendere Stundenplan...');
+            
+            days.forEach(day => {
+                timeSlots.forEach(timeSlot => {
+                    const isBreak = typeof timeSlot === 'object';
+                    if (isBreak) return;
+                    
+                    const time = timeSlot;
+                    const isBlocked = blockedSlots[day] && blockedSlots[day][time];
+                    if (isBlocked) return;
+                    
+                    updateCell(day, time);
+                });
+            });
+        }
+        
+        function updateCell(day, time) {
+            const cell = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
+            if (!cell) return;
+            
+            const lessonKey = `${day}-${time}`;
+            const teacherLesson = teacherLessons[lessonKey];
+            const studentPlan = studentPlans[lessonKey];
+            
+            if (teacherLesson && (teacherLesson.title || teacherLesson.subject)) {
+                const colorClass = solSubjectColors[teacherLesson.subject] || 'sol-französisch';
+                cell.className = `lesson-cell teacher-defined ${colorClass}`;
+                
+                if (teacherLesson.files && teacherLesson.files.length > 0) {
+                    cell.classList.add('has-files');
+                }
+                
+                cell.innerHTML = `
+                    <div class="lesson-content">
+                        <div class="lesson-main-label">SOL</div>
+                        ${teacherLesson.title && teacherLesson.title !== 'SOL' ? `<div class="lesson-title">${teacherLesson.title}</div>` : ''}
+                        ${teacherLesson.subject ? `<div class="lesson-subject">${teacherLesson.subject}</div>` : ''}
+                    </div>
+                    <div class="teacher-indicator">L</div>
+                    ${teacherLesson.files && teacherLesson.files.length > 0 ? `<button class="files-btn" onclick="event.stopPropagation(); openFilesModal('${day}', '${time}')" title="Dateien anzeigen">📎</button>` : ''}
+                `;
+            } else if (studentPlan && (studentPlan.title || studentPlan.subject)) {
+                cell.className = 'lesson-cell student-planned';
+                
+                cell.innerHTML = `
+                    <div class="lesson-content">
+                        <div class="lesson-main-label">SOL</div>
+                        ${studentPlan.title ? `<div class="lesson-title">${studentPlan.title}</div>` : ''}
+                        ${studentPlan.subject ? `<div class="lesson-subject">${studentPlan.subject}</div>` : ''}
+                    </div>
+                    <button class="edit-btn" onclick="event.stopPropagation(); editStudentPlan('${day}', '${time}')" title="Bearbeiten">✏</button>
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteStudentPlan('${day}', '${time}')" title="Löschen">×</button>
+                `;
+            } else {
+                cell.className = 'lesson-cell empty-sol';
+                cell.innerHTML = `
+                    <div class="lesson-content">
+                        <div class="lesson-main-label" style="opacity: 0.7;">SOL</div>
+                        <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px;">Klicken zum Planen</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function openPlanModal(day, time) {
+            currentPlanCell = { day, time };
+            const lessonKey = `${day}-${time}`;
+            const studentPlan = studentPlans[lessonKey];
+            
+            updateDebugInfo(`Öffne Planungs-Modal für: ${day} ${time}`);
+            
+            document.getElementById('modalTimeSlot').textContent = `${day}, ${time}`;
+            document.getElementById('lessonTitle').value = studentPlan?.title || '';
+            document.getElementById('lessonSubject').value = studentPlan?.subject || '';
+            document.getElementById('lessonNotes').value = studentPlan?.notes || '';
+            
+            document.getElementById('planModal').style.display = 'block';
+            document.getElementById('lessonTitle').focus();
+        }
+        
+        function editStudentPlan(day, time) {
+            updateDebugInfo(`Bearbeite Schülerplanung: ${day} ${time}`);
+            openPlanModal(day, time);
+        }
+        
+        function closePlanModal() {
+            document.getElementById('planModal').style.display = 'none';
+            currentPlanCell = null;
+        }
+        
+        function saveStudentPlan() {
+            if (!currentPlanCell) return;
+            
+            const title = document.getElementById('lessonTitle').value.trim();
+            const subject = document.getElementById('lessonSubject').value;
+            const notes = document.getElementById('lessonNotes').value.trim();
+            
+            const lessonKey = `${currentPlanCell.day}-${currentPlanCell.time}`;
+            
+            updateDebugInfo(`Speichere Schülerplanung: ${lessonKey}`);
+            
+            if (title || subject || notes) {
+                const planData = {
+                    title: title || 'SOL',
+                    subject,
+                    notes,
+                    day: currentPlanCell.day,
+                    time: currentPlanCell.time,
+                    created: studentPlans[lessonKey]?.created || new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+                
+                studentPlans[lessonKey] = planData;
+                saveStudentPlanToFirebase(lessonKey, planData);
+            } else {
+                delete studentPlans[lessonKey];
+                deleteStudentPlanFromFirebase(lessonKey);
+            }
+            
+            updateCell(currentPlanCell.day, currentPlanCell.time);
+            closePlanModal();
+        }
+        
+        function deleteStudentPlan(day, time) {
+            if (confirm('Möchtest du deine Planung für diese Stunde wirklich löschen?')) {
+                const lessonKey = `${day}-${time}`;
+                updateDebugInfo(`Lösche Schülerplanung: ${lessonKey}`);
+                delete studentPlans[lessonKey];
+                deleteStudentPlanFromFirebase(lessonKey);
+                updateCell(day, time);
+            }
+        }
+        
+        function openFilesModal(day, time) {
+            currentFilesCell = { day, time };
+            const lessonKey = `${day}-${time}`;
+            const teacherLesson = teacherLessons[lessonKey];
+            
+            updateDebugInfo(`Öffne Dateien-Modal für: ${day} ${time}`);
+            
+            document.getElementById('filesModalTimeSlot').textContent = `${day}, ${time}`;
+            
+            const filesList = document.getElementById('filesList');
+            filesList.innerHTML = '';
+            
+            if (teacherLesson && teacherLesson.files && teacherLesson.files.length > 0) {
+                teacherLesson.files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span>📎 ${file.name}</span>
+                        <span style="opacity: 0.7; font-size: 0.8rem;">${formatFileSize(file.size)}</span>
+                    `;
+                    
+                    fileItem.addEventListener('click', () => {
+                        downloadFile(file);
+                    });
+                    
+                    filesList.appendChild(fileItem);
+                });
+            } else {
+                filesList.innerHTML = '<p style="opacity: 0.7; text-align: center; padding: 20px;">Keine Dateien verfügbar</p>';
+            }
+            
+            document.getElementById('filesModal').style.display = 'block';
+        }
+        
+        function closeFilesModal() {
+            document.getElementById('filesModal').style.display = 'none';
+            currentFilesCell = null;
+        }
+        
+        function downloadFile(file) {
+            updateDebugInfo(`Download-Anfrage für: ${file.name}`);
+            alert(`Download für: ${file.name}\n\nGröße: ${formatFileSize(file.size)}\nTyp: ${file.type}\n\nHinweis: In einer vollständigen Implementierung würde hier der echte Download starten.`);
+        }
+        
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        window.onclick = function(event) {
+            const planModal = document.getElementById('planModal');
+            const filesModal = document.getElementById('filesModal');
+            
+            if (event.target === planModal) {
+                closePlanModal();
+            }
+            if (event.target === filesModal) {
+                closeFilesModal();
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             updateDebugInfo('DOM geladen, starte Initialisierung...');
             
-            // Student Name Event
             const studentNameInput = document.getElementById('studentName');
             if (studentNameInput) {
                 studentNameInput.addEventListener('input', function() {
@@ -628,18 +1208,26 @@
                     if (name) {
                         updateDebugInfo(`Schülername eingegeben: ${name}`);
                         localStorage.setItem('sol_student_name', name);
+                        currentStudentId = getStudentId();
+                        loadStudentPlans();
                     }
                 });
                 
-                // Gespeicherten Namen laden
-                const savedName = localStorage.getItem('sol_student_name');
-                if (savedName) {
-                    studentNameInput.value = savedName;
-                    updateDebugInfo(`Gespeicherter Name geladen: ${savedName}`);
-                }
+                loadStudentName();
             }
             
-            // Schedule Grid erstellen
+            updateDebugInfo('Verbinde mit Firebase...');
+            try {
+                loadTeacherLessons();
+                
+                currentStudentId = getStudentId();
+                if (currentStudentId) {
+                    loadStudentPlans();
+                }
+            } catch (error) {
+                updateDebugInfo(`Firebase-Fehler: ${error.message}`);
+            }
+            
             createScheduleGrid();
             
             updateDebugInfo('Initialisierung abgeschlossen!');
