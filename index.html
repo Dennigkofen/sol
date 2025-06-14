@@ -102,18 +102,6 @@
             color: rgba(255, 255, 255, 0.9);
         }
         
-        .debug-info {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 16px;
-            margin: 20px 40px;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 0.8rem;
-            white-space: pre-line;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
         .schedule-container {
             padding: 40px;
         }
@@ -654,10 +642,6 @@
             </div>
         </div>
         
-        <div class="debug-info" id="debugInfo">
-            Lade Stundenplan...
-        </div>
-        
         <div class="schedule-container">
             <div class="schedule-grid" id="scheduleGrid">
                 <!-- Grid wird dynamisch gefüllt -->
@@ -824,13 +808,6 @@
         let currentStudentId = '';
         let currentPlanCell = null;
         let currentFilesCell = null;
-        let debugInfo = '';
-        
-        function updateDebugInfo(message) {
-            debugInfo += new Date().toLocaleTimeString() + ': ' + message + '\n';
-            document.getElementById('debugInfo').textContent = debugInfo;
-            console.log(message);
-        }
         
         function getStudentId() {
             const studentName = document.getElementById('studentName').value.trim();
@@ -848,64 +825,64 @@
         
         function saveStudentName() {
             const studentName = document.getElementById('studentName').value.trim();
-            updateDebugInfo(`Speichere Schülername: ${studentName}`);
+            console.log(`Speichere Schülername: ${studentName}`);
             
             if (studentName) {
                 localStorage.setItem('sol_student_name', studentName);
                 currentStudentId = getStudentId();
-                updateDebugInfo(`Neue Student ID: ${currentStudentId}`);
+                console.log(`Neue Student ID: ${currentStudentId}`);
                 loadStudentPlans();
             }
         }
         
         function loadStudentName() {
             const savedName = localStorage.getItem('sol_student_name');
-            updateDebugInfo(`Lade Schülername: ${savedName}`);
+            console.log(`Lade Schülername: ${savedName}`);
             
             if (savedName) {
                 document.getElementById('studentName').value = savedName;
                 currentStudentId = getStudentId();
-                updateDebugInfo(`Student ID gesetzt: ${currentStudentId}`);
+                console.log(`Student ID gesetzt: ${currentStudentId}`);
             }
         }
         
         function loadTeacherLessons() {
-            updateDebugInfo('Lade Lehrer-Lektionen...');
+            console.log('Lade Lehrer-Lektionen...');
             
             database.ref('sol-stundenplan').on('value', (snapshot) => {
                 const data = snapshot.val();
                 teacherLessons = data || {};
-                updateDebugInfo(`Lehrer-Lektionen geladen: ${Object.keys(teacherLessons).length} Einträge`);
+                console.log(`Lehrer-Lektionen geladen: ${Object.keys(teacherLessons).length} Einträge`);
                 renderSchedule();
             }, (error) => {
-                updateDebugInfo(`FEHLER beim Laden der Lehrer-Lektionen: ${error.message}`);
+                console.error(`FEHLER beim Laden der Lehrer-Lektionen: ${error.message}`);
             });
         }
         
         function saveStudentPlanToFirebase(lessonKey, planData) {
             const studentId = getStudentId();
-            updateDebugInfo(`Speichere Schülerplanung: ${lessonKey}`);
+            console.log(`Speichere Schülerplanung: ${lessonKey}`);
             
             database.ref(`student-plans/${studentId}/${lessonKey}`).set(planData)
                 .then(() => {
-                    updateDebugInfo('Schülerplanung erfolgreich gespeichert');
+                    console.log('Schülerplanung erfolgreich gespeichert');
                 })
                 .catch((error) => {
-                    updateDebugInfo(`FEHLER beim Speichern: ${error.message}`);
+                    console.error(`FEHLER beim Speichern: ${error.message}`);
                     alert('Fehler beim Speichern deiner Planung. Bitte versuche es erneut.');
                 });
         }
         
         function deleteStudentPlanFromFirebase(lessonKey) {
             const studentId = getStudentId();
-            updateDebugInfo(`Lösche Schülerplanung: ${lessonKey}`);
+            console.log(`Lösche Schülerplanung: ${lessonKey}`);
             
             database.ref(`student-plans/${studentId}/${lessonKey}`).remove()
                 .then(() => {
-                    updateDebugInfo('Schülerplanung erfolgreich gelöscht');
+                    console.log('Schülerplanung erfolgreich gelöscht');
                 })
                 .catch((error) => {
-                    updateDebugInfo(`FEHLER beim Löschen: ${error.message}`);
+                    console.error(`FEHLER beim Löschen: ${error.message}`);
                     alert('Fehler beim Löschen deiner Planung. Bitte versuche es erneut.');
                 });
         }
@@ -913,28 +890,28 @@
         function loadStudentPlans() {
             const studentId = getStudentId();
             if (!studentId) {
-                updateDebugInfo('Keine Student ID verfügbar');
+                console.log('Keine Student ID verfügbar');
                 return;
             }
             
-            updateDebugInfo(`Lade Schüler-Planungen für: ${studentId}`);
+            console.log(`Lade Schüler-Planungen für: ${studentId}`);
             
             database.ref(`student-plans/${studentId}`).on('value', (snapshot) => {
                 const data = snapshot.val();
                 studentPlans = data || {};
-                updateDebugInfo(`Schüler-Planungen geladen: ${Object.keys(studentPlans).length} Einträge`);
+                console.log(`Schüler-Planungen geladen: ${Object.keys(studentPlans).length} Einträge`);
                 renderSchedule();
             }, (error) => {
-                updateDebugInfo(`FEHLER beim Laden der Schüler-Planungen: ${error.message}`);
+                console.error(`FEHLER beim Laden der Schüler-Planungen: ${error.message}`);
             });
         }
         
         function createScheduleGrid() {
-            updateDebugInfo('Erstelle Stundenplan-Grid...');
+            console.log('Erstelle Stundenplan-Grid...');
             
             const grid = document.getElementById('scheduleGrid');
             if (!grid) {
-                updateDebugInfo('FEHLER: Grid-Element nicht gefunden!');
+                console.error('FEHLER: Grid-Element nicht gefunden!');
                 return;
             }
             
@@ -1001,7 +978,7 @@
         }
         
         function renderSchedule() {
-            updateDebugInfo('Rendere Stundenplan...');
+            console.log('Rendere Stundenplan...');
             
             days.forEach(day => {
                 timeSlots.forEach(timeSlot => {
@@ -1070,7 +1047,7 @@
             const lessonKey = `${day}-${time}`;
             const studentPlan = studentPlans[lessonKey];
             
-            updateDebugInfo(`Öffne Planungs-Modal für: ${day} ${time}`);
+            console.log(`Öffne Planungs-Modal für: ${day} ${time}`);
             
             document.getElementById('modalTimeSlot').textContent = `${day}, ${time}`;
             document.getElementById('lessonTitle').value = studentPlan?.title || '';
@@ -1082,7 +1059,7 @@
         }
         
         function editStudentPlan(day, time) {
-            updateDebugInfo(`Bearbeite Schülerplanung: ${day} ${time}`);
+            console.log(`Bearbeite Schülerplanung: ${day} ${time}`);
             openPlanModal(day, time);
         }
         
@@ -1100,7 +1077,7 @@
             
             const lessonKey = `${currentPlanCell.day}-${currentPlanCell.time}`;
             
-            updateDebugInfo(`Speichere Schülerplanung: ${lessonKey}`);
+            console.log(`Speichere Schülerplanung: ${lessonKey}`);
             
             if (title || subject || notes) {
                 const planData = {
@@ -1127,7 +1104,7 @@
         function deleteStudentPlan(day, time) {
             if (confirm('Möchtest du deine Planung für diese Stunde wirklich löschen?')) {
                 const lessonKey = `${day}-${time}`;
-                updateDebugInfo(`Lösche Schülerplanung: ${lessonKey}`);
+                console.log(`Lösche Schülerplanung: ${lessonKey}`);
                 delete studentPlans[lessonKey];
                 deleteStudentPlanFromFirebase(lessonKey);
                 updateCell(day, time);
@@ -1139,7 +1116,7 @@
             const lessonKey = `${day}-${time}`;
             const teacherLesson = teacherLessons[lessonKey];
             
-            updateDebugInfo(`Öffne Dateien-Modal für: ${day} ${time}`);
+            console.log(`Öffne Dateien-Modal für: ${day} ${time}`);
             
             document.getElementById('filesModalTimeSlot').textContent = `${day}, ${time}`;
             
@@ -1174,8 +1151,50 @@
         }
         
         function downloadFile(file) {
-            updateDebugInfo(`Download-Anfrage für: ${file.name}`);
-            alert(`Download für: ${file.name}\n\nGröße: ${formatFileSize(file.size)}\nTyp: ${file.type}\n\nHinweis: In einer vollständigen Implementierung würde hier der echte Download starten.`);
+            console.log(`Download startet für: ${file.name}`);
+            
+            // Erstelle einen simulierten Download-Blob
+            // In einer echten Implementierung würde hier die echte Datei von einem File-Storage geladen
+            try {
+                // Erstelle Dummy-Inhalt basierend auf Dateityp
+                let content;
+                let mimeType = file.type || 'text/plain';
+                
+                if (file.type && file.type.includes('text')) {
+                    content = `Dies ist eine Demo-Datei: ${file.name}\n\nIn einer vollständigen Implementierung würde hier der echte Dateiinhalt stehen.\n\nDatei-Informationen:\n- Name: ${file.name}\n- Größe: ${formatFileSize(file.size)}\n- Typ: ${file.type}`;
+                } else if (file.type && file.type.includes('pdf')) {
+                    content = '%PDF-1.4\nDemo PDF Inhalt für ' + file.name;
+                    mimeType = 'application/pdf';
+                } else {
+                    content = `Demo-Inhalt für ${file.name}`;
+                }
+                
+                // Erstelle Blob und Download-Link
+                const blob = new Blob([content], { type: mimeType });
+                const url = window.URL.createObjectURL(blob);
+                
+                // Erstelle temporären Download-Link
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = file.name;
+                downloadLink.style.display = 'none';
+                
+                // Füge Link zum DOM hinzu, klicke und entferne ihn
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                // Bereinige URL
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+                
+                console.log(`Download erfolgreich gestartet: ${file.name}`);
+                
+            } catch (error) {
+                console.error('Download-Fehler:', error);
+                alert(`Fehler beim Download von ${file.name}.\n\nHinweis: Dies ist eine Demo-Implementierung. In einer vollständigen Version würden echte Dateien von einem File-Storage (z.B. Firebase Storage) heruntergeladen.`);
+            }
         }
         
         function formatFileSize(bytes) {
@@ -1199,14 +1218,14 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
-            updateDebugInfo('DOM geladen, starte Initialisierung...');
+            console.log('DOM geladen, starte Initialisierung...');
             
             const studentNameInput = document.getElementById('studentName');
             if (studentNameInput) {
                 studentNameInput.addEventListener('input', function() {
                     const name = this.value.trim();
                     if (name) {
-                        updateDebugInfo(`Schülername eingegeben: ${name}`);
+                        console.log(`Schülername eingegeben: ${name}`);
                         localStorage.setItem('sol_student_name', name);
                         currentStudentId = getStudentId();
                         loadStudentPlans();
@@ -1216,7 +1235,7 @@
                 loadStudentName();
             }
             
-            updateDebugInfo('Verbinde mit Firebase...');
+            console.log('Verbinde mit Firebase...');
             try {
                 loadTeacherLessons();
                 
@@ -1225,12 +1244,12 @@
                     loadStudentPlans();
                 }
             } catch (error) {
-                updateDebugInfo(`Firebase-Fehler: ${error.message}`);
+                console.error(`Firebase-Fehler: ${error.message}`);
             }
             
             createScheduleGrid();
             
-            updateDebugInfo('Initialisierung abgeschlossen!');
+            console.log('Initialisierung abgeschlossen!');
         });
     </script>
 </body>
