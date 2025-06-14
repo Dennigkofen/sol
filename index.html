@@ -102,6 +102,16 @@
             color: rgba(255, 255, 255, 0.9);
         }
         
+        .debug-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            margin: 20px 40px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            white-space: pre-line;
+        }
+        
         .schedule-container {
             padding: 40px;
         }
@@ -369,232 +379,6 @@
             border: 2px solid rgba(96, 125, 139, 0.4);
         }
         
-        .edit-btn, .delete-btn {
-            position: absolute;
-            background: rgba(33, 150, 243, 0.95);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .edit-btn {
-            top: 8px;
-            left: 8px;
-        }
-        
-        .delete-btn {
-            top: 8px;
-            right: 8px;
-            background: rgba(244, 67, 54, 0.95);
-        }
-        
-        .edit-btn:hover {
-            background: rgba(25, 118, 210, 1);
-            transform: scale(1.1);
-        }
-        
-        .delete-btn:hover {
-            background: rgba(211, 47, 47, 1);
-            transform: scale(1.1);
-        }
-        
-        .lesson-cell.student-planned:hover .edit-btn,
-        .lesson-cell.student-planned:hover .delete-btn {
-            display: flex;
-        }
-        
-        .files-btn {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            background: rgba(76, 175, 80, 0.8);
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .files-btn:hover {
-            background: rgba(56, 142, 60, 1);
-            transform: scale(1.1);
-        }
-        
-        .lesson-cell.teacher-defined.has-files:hover .files-btn {
-            display: flex;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-content {
-            background: rgba(255, 255, 255, 0.15);
-            margin: 5% auto;
-            padding: 32px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 600px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-        
-        .modal h3 {
-            margin-bottom: 20px;
-            color: #ffd700;
-            font-size: 1.5rem;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.95rem;
-        }
-        
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            backdrop-filter: blur(10px);
-        }
-        
-        .form-group input::placeholder, .form-group textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: rgba(33, 150, 243, 0.6);
-            box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        .form-group select {
-            cursor: pointer;
-        }
-        
-        .form-group select option {
-            background: #2a2a2a;
-            color: #fff;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 16px rgba(33, 150, 243, 0.3);
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .close {
-            color: rgba(255, 255, 255, 0.7);
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-        }
-        
-        .close:hover {
-            color: #fff;
-        }
-        
-        .file-list {
-            margin-top: 16px;
-        }
-        
-        .file-item {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .file-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-        
         .legend {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -630,53 +414,22 @@
             font-weight: 500;
             font-size: 0.9rem;
         }
-        
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 16px;
-            }
-            
-            .schedule-container {
-                padding: 24px 20px;
-            }
-            
-            .header {
-                padding: 32px 24px;
-            }
-            
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            
-            .schedule-grid {
-                grid-template-columns: 100px repeat(5, 1fr);
-                gap: 4px;
-                padding: 16px;
-            }
-            
-            .time-slot, .day-header, .lesson-cell {
-                min-height: 60px;
-                font-size: 0.8rem;
-            }
-            
-            .student-info {
-                position: static;
-                margin-bottom: 16px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="student-info">
-                <input type="text" id="studentName" placeholder="Dein Name" oninput="saveStudentName()">
+                <input type="text" id="studentName" placeholder="Dein Name">
             </div>
             <div class="header-content">
                 <h1>SOL Stundenplan</h1>
                 <p>Meine individuelle Lernplanung</p>
             </div>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            Lade Stundenplan...
         </div>
         
         <div class="schedule-container">
@@ -708,47 +461,189 @@
         </div>
     </div>
 
-    <!-- Modal für SOL-Planung -->
-    <div id="planModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closePlanModal()">&times;</span>
-            <h3>SOL-Lektion planen</h3>
-            <p id="modalTimeSlot" style="margin-bottom: 16px; opacity: 0.8;"></p>
+    <script>
+        // Globale Variablen
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+        const timeSlots = [
+            '07:30-08:15', 
+            '08:20-09:05', 
+            '09:10-09:55', 
+            { time: '09:55-10:20', type: 'pause', label: 'PAUSE' },
+            '10:20-11:05', 
+            '11:10-11:55', 
+            { time: '11:55-13:50', type: 'mittag', label: 'MITTAG' },
+            '13:50-14:35', 
+            '14:40-15:25', 
+            '15:40-16:25', 
+            '16:30-17:15'
+        ];
+        
+        // Gesperrte Zeitslots pro Tag
+        const blockedSlots = {
+            'Montag': {
+                '07:30-08:15': 'Klassenwettkampf',
+                '13:50-14:35': 'RZG',
+                '14:40-15:25': 'RZG'
+            },
+            'Dienstag': {
+                '08:20-09:05': 'NT / MI',
+                '09:10-09:55': 'NT / MI',
+                '13:50-14:35': 'WAH',
+                '14:40-15:25': 'WAH'
+            },
+            'Mittwoch': {
+                '10:20-11:05': 'Sport',
+                '11:10-11:55': 'ERG'
+            },
+            'Donnerstag': {
+                '13:50-14:35': 'Musik',
+                '14:40-15:25': 'Musik'
+            },
+            'Freitag': {
+                '10:20-11:05': 'Sport',
+                '11:10-11:55': 'Sport',
+                '13:50-14:35': 'BG',
+                '14:40-15:25': 'BG',
+                '15:40-16:25': 'TTG / TxG',
+                '16:30-17:15': 'TTG / TxG'
+            }
+        };
+        
+        // Fachfarben-Mapping für regulären Unterricht
+        const subjectColors = {
+            'Klassenwettkampf': 'subject-klassenwettkampf',
+            'RZG': 'subject-rzg',
+            'NT / MI': 'subject-nt-mi',
+            'WAH': 'subject-wah',
+            'Sport': 'subject-sport',
+            'ERG': 'subject-erg',
+            'Musik': 'subject-musik',
+            'BG': 'subject-bg',
+            'TTG / TxG': 'subject-ttg-txg'
+        };
+        
+        let debugInfo = '';
+        
+        function updateDebugInfo(message) {
+            debugInfo += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            document.getElementById('debugInfo').textContent = debugInfo;
+            console.log(message);
+        }
+        
+        function createScheduleGrid() {
+            updateDebugInfo('Erstelle Stundenplan-Grid...');
             
-            <div class="form-group">
-                <label for="lessonTitle">Was möchtest du bearbeiten?</label>
-                <input type="text" id="lessonTitle" placeholder="z.B. Mathematik Übungen, Französisch Vokabeln...">
-            </div>
+            const grid = document.getElementById('scheduleGrid');
+            if (!grid) {
+                updateDebugInfo('FEHLER: Grid-Element nicht gefunden!');
+                return;
+            }
             
-            <div class="form-group">
-                <label for="lessonSubject">Fach</label>
-                <select id="lessonSubject">
-                    <option value="">Fach auswählen</option>
-                    <option value="Französisch">Französisch</option>
-                    <option value="Deutsch">Deutsch</option>
-                    <option value="Englisch">Englisch</option>
-                    <option value="NT">NT</option>
-                    <option value="RZG">RZG</option>
-                    <option value="Mathematik">Mathematik</option>
-                    <option value="Sonstiges">Sonstiges</option>
-                </select>
-            </div>
+            // Grid leeren
+            grid.innerHTML = '';
             
-            <div class="form-group">
-                <label for="lessonNotes">Meine Notizen & Ziele</label>
-                <textarea id="lessonNotes" rows="3" placeholder="Was sind deine Ziele für diese Stunde? Welche Aufgaben willst du erledigen?"></textarea>
-            </div>
+            // Empty corner cell
+            const cornerCell = document.createElement('div');
+            cornerCell.className = 'time-slot';
+            cornerCell.style.background = 'rgba(255, 255, 255, 0.15)';
+            grid.appendChild(cornerCell);
             
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closePlanModal()">Abbrechen</button>
-                <button class="btn btn-primary" onclick="saveStudentPlan()">Speichern</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal für Dateien -->
-    <div id="filesModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeFilesModal()">&times;</span>
-            <h3>Verfügbare Dateien</h3>
-            <p id="
+            // Day headers
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = day;
+                grid.appendChild(dayHeader);
+            });
+            
+            // Time slots and lesson cells
+            timeSlots.forEach(timeSlot => {
+                const isBreak = typeof timeSlot === 'object';
+                const time = isBreak ? timeSlot.time : timeSlot;
+                
+                // Time slot header
+                const timeHeader = document.createElement('div');
+                if (isBreak) {
+                    timeHeader.className = timeSlot.type === 'pause' ? 'time-slot pause-break' : 'time-slot mittag-break';
+                    timeHeader.textContent = timeSlot.label;
+                } else {
+                    timeHeader.className = 'time-slot';
+                    timeHeader.textContent = time;
+                }
+                grid.appendChild(timeHeader);
+                
+                // Lesson cells for each day
+                days.forEach(day => {
+                    const cell = document.createElement('div');
+                    cell.dataset.day = day;
+                    cell.dataset.time = time;
+                    
+                    if (isBreak) {
+                        // Break cells
+                        cell.className = 'lesson-cell break-cell';
+                        cell.textContent = timeSlot.label;
+                    } else {
+                        // Check if this slot is blocked for this day
+                        const isBlocked = blockedSlots[day] && blockedSlots[day][time];
+                        
+                        if (isBlocked) {
+                            // Blocked cells - regulärer Unterricht
+                            const subjectName = blockedSlots[day][time];
+                            const colorClass = subjectColors[subjectName] || 'blocked-cell';
+                            cell.className = `lesson-cell blocked-cell ${colorClass}`;
+                            cell.textContent = subjectName;
+                        } else {
+                            // SOL cells - editable by students
+                            cell.className = 'lesson-cell empty-sol';
+                            cell.innerHTML = `
+                                <div class="lesson-content">
+                                    <div class="lesson-main-label" style="opacity: 0.7;">SOL</div>
+                                    <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px;">Klicken zum Planen</div>
+                                </div>
+                            `;
+                            
+                            cell.addEventListener('click', () => {
+                                updateDebugInfo(`Geklickt auf: ${day} ${time}`);
+                                alert(`SOL-Planung für ${day}, ${time}\n\nHier würde das Planungs-Modal geöffnet werden.`);
+                            });
+                        }
+                    }
+                    
+                    grid.appendChild(cell);
+                });
+            });
+            
+            updateDebugInfo(`Grid erstellt: ${grid.children.length} Elemente`);
+        }
+        
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugInfo('DOM geladen, starte Initialisierung...');
+            
+            // Student Name Event
+            const studentNameInput = document.getElementById('studentName');
+            if (studentNameInput) {
+                studentNameInput.addEventListener('input', function() {
+                    const name = this.value.trim();
+                    if (name) {
+                        updateDebugInfo(`Schülername eingegeben: ${name}`);
+                        localStorage.setItem('sol_student_name', name);
+                    }
+                });
+                
+                // Gespeicherten Namen laden
+                const savedName = localStorage.getItem('sol_student_name');
+                if (savedName) {
+                    studentNameInput.value = savedName;
+                    updateDebugInfo(`Gespeicherter Name geladen: ${savedName}`);
+                }
+            }
+            
+            // Schedule Grid erstellen
+            createScheduleGrid();
+            
+            updateDebugInfo('Initialisierung abgeschlossen!');
+        });
+    </script>
+</body>
+</html>
