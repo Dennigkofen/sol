@@ -772,7 +772,18 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
+        // Firebase Konfiguration
+        const firebaseConfig = {
+            databaseURL: "https://wortartenspiele-default-rtdb.europe-west1.firebasedatabase.app/"
+        };
+        
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
         const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
         const timeSlots = [
             '07:30-08:15', 
@@ -847,11 +858,55 @@
         let currentEditCell = null;
         let isEditMode = false;
         
+        // Firebase Funktionen
+        function saveToFirebase(lessonKey, lessonData) {
+            database.ref('sol-stundenplan/' + lessonKey).set(lessonData)
+                .then(() => {
+                    console.log('Lektion erfolgreich gespeichert');
+                })
+                .catch((error) => {
+                    console.error('Fehler beim Speichern:', error);
+                    alert('Fehler beim Speichern der Lektion. Bitte versuchen Sie es erneut.');
+                });
+        }
+        
+        function deleteFromFirebase(lessonKey) {
+            database.ref('sol-stundenplan/' + lessonKey).remove()
+                .then(() => {
+                    console.log('Lektion erfolgreich gelöscht');
+                })
+                .catch((error) => {
+                    console.error('Fehler beim Löschen:', error);
+                    alert('Fehler beim Löschen der Lektion. Bitte versuchen Sie es erneut.');
+                });
+        }
+        
+        function loadFromFirebase() {
+            database.ref('sol-stundenplan').once('value')
+                .then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        lessons = data;
+                        // Alle Zellen aktualisieren
+                        Object.keys(lessons).forEach(lessonKey => {
+                            const lesson = lessons[lessonKey];
+                            updateCell(lesson.day, lesson.time);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Fehler beim Laden:', error);
+                });
+        }
+        
         function initializeSchedule() {
             const grid = document.getElementById('scheduleGrid');
             
             // Event listener for file input
             document.getElementById('lessonFiles').addEventListener('change', handleFileSelection);
+            
+            // Firebase Daten laden
+            loadFromFirebase();
             
             // Empty corner cell
             const cornerCell = document.createElement('div');
@@ -939,7 +994,8 @@
                     document.getElementById('lessonTitle').value = lesson.title || '';
                     document.getElementById('lessonSubject').value = lesson.subject || '';
                     document.getElementById('lessonNotes').value = lesson.notes || '';
-                    selectedFiles = lesson.files || [];
+                    // Datei-Metadaten anzeigen (echte Dateien können nicht wiederhergestellt werden)
+                    selectedFiles = lesson.files ? lesson.files.map(f => ({ name: f.name, size: f.size, type: f.type })) : [];
                     updateFileList();
                 }
                 isEditMode = false;
@@ -980,8 +1036,13 @@
             selectedFiles.forEach((file, index) => {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
+                
+                // Unterscheiden zwischen echten File-Objekten und gespeicherten Metadaten
+                const fileName = file.name || 'Unbekannte Datei';
+                const isMetadata = !file.lastModified; // Metadaten haben kein lastModified
+                
                 fileItem.innerHTML = `
-                    <span>📎 ${file.name}</span>
+                    <span>📎 ${fileName} ${isMetadata ? '(gespeichert)' : ''}</span>
                     <button class="file-remove" onclick="removeFile(${index})" title="Datei entfernen">×</button>
                 `;
                 fileList.appendChild(fileItem);
@@ -1007,14 +1068,25 @@
             const notes = document.getElementById('lessonNotes').value.trim();
             
             const lessonKey = `${currentEditCell.day}-${currentEditCell.time}`;
-            lessons[lessonKey] = {
+            const lessonData = {
                 title: title || 'SOL',
                 subject,
                 notes,
-                files: [...selectedFiles],
+                files: selectedFiles.map(file => ({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                })), // Nur Datei-Metadaten, nicht die Dateien selbst
                 day: currentEditCell.day,
-                time: currentEditCell.time
+                time: currentEditCell.time,
+                created: new Date().toISOString(),
+                updated: new Date().toISOString()
             };
+            
+            lessons[lessonKey] = lessonData;
+            
+            // In Firebase speichern
+            saveToFirebase(lessonKey, lessonData);
             
             updateCell(currentEditCell.day, currentEditCell.time);
             cancelAddLesson();
@@ -1049,7 +1121,13 @@
         function deleteLesson(day, time) {
             if (confirm('Möchten Sie diese SOL-Lektion wirklich löschen?')) {
                 const lessonKey = `${day}-${time}`;
+                
+                // Aus lokaler Kopie entfernen
                 delete lessons[lessonKey];
+                
+                // Aus Firebase löschen
+                deleteFromFirebase(lessonKey);
+                
                 updateCell(day, time);
             }
         }
