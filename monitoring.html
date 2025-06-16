@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL Lehrerübersicht - Monitoring</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 24px;
+            color: #fff;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 48px 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .header::before {
+            content: '👩‍🏫';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .refresh-btn {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            background: rgba(76, 175, 80, 0.9);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(56, 142, 60, 1);
+            transform: translateY(-2px);
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #ffd700;
+            text-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .schedule-container {
+            padding: 40px;
+        }
+        
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 120px repeat(5, 1fr);
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .time-slot, .day-header, .lesson-cell {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .day-header {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .time-slot {
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .pause-break {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 152, 0, 0.3) 100%);
+            color: #ffc107;
+            font-weight: 600;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            box-shadow: 0 8px 16px rgba(255, 193, 7, 0.2);
+        }
+        
+        .mittag-break {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.3) 0%, rgba(103, 58, 183, 0.3) 100%);
+            color: #e1bee7;
+            font-weight: 600;
+            border: 1px solid rgba(156, 39, 176, 0.4);
+            box-shadow: 0 8px 16px rgba(156, 39, 176, 0.2);
+        }
+        
+        .lesson-cell {
+            text-align: center;
+            padding: 12px;
+            position: relative;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .lesson-cell.clickable:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+        
+        .lesson-cell.has-teacher-content {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 193, 7, 0.8) 100%);
+            color: #1a1a1a;
+            border: 2px solid rgba(255, 215, 0, 0.6);
+        }
+        
+        .lesson-cell.has-student-plans {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.8) 0%, rgba(25, 118, 210, 0.8) 100%);
+            border: 2px solid rgba(33, 150, 243, 0.6);
+        }
+        
+        .lesson-cell.mixed-content {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.8) 0%, rgba(123, 31, 162, 0.8) 100%);
+            border: 2px solid rgba(156, 39, 176, 0.6);
+        }
+        
+        .break-cell {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            cursor: default;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+        }
+        
+        .break-cell:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .blocked-cell {
+            cursor: default;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .blocked-cell:hover {
+            transform: none;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .subject-klassenwettkampf {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(56, 142, 60, 0.25) 100%);
+            color: #a5d6a7;
+            border: 2px solid rgba(76, 175, 80, 0.4);
+        }
+        
+        .subject-rzg {
+            background: linear-gradient(135deg, rgba(3, 169, 244, 0.25) 0%, rgba(2, 136, 209, 0.25) 100%);
+            color: #81d4fa;
+            border: 2px solid rgba(3, 169, 244, 0.4);
+        }
+        
+        .subject-nt-mi {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(245, 124, 0, 0.25) 100%);
+            color: #ffcc80;
+            border: 2px solid rgba(255, 152, 0, 0.4);
+        }
+        
+        .subject-wah {
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.25) 0%, rgba(194, 24, 91, 0.25) 100%);
+            color: #f8bbd9;
+            border: 2px solid rgba(233, 30, 99, 0.4);
+        }
+        
+        .subject-sport {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(46, 125, 50, 0.25) 100%);
+            color: #c8e6c9;
+            border: 2px solid rgba(76, 175, 80, 0.4);
+        }
+        
+        .subject-erg {
+            background: linear-gradient(135deg, rgba(121, 85, 72, 0.25) 0%, rgba(93, 64, 55, 0.25) 100%);
+            color: #d7ccc8;
+            border: 2px solid rgba(121, 85, 72, 0.4);
+        }
+        
+        .subject-musik {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.25) 0%, rgba(123, 31, 162, 0.25) 100%);
+            color: #e1bee7;
+            border: 2px solid rgba(156, 39, 176, 0.4);
+        }
+        
+        .subject-bg {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.25) 0%, rgba(230, 74, 25, 0.25) 100%);
+            color: #ffab91;
+            border: 2px solid rgba(255, 87, 34, 0.4);
+        }
+        
+        .subject-ttg-txg {
+            background: linear-gradient(135deg, rgba(96, 125, 139, 0.25) 0%, rgba(69, 90, 100, 0.25) 100%);
+            color: #b0bec5;
+            border: 2px solid rgba(96, 125, 139, 0.4);
+        }
+        
+        .subject-keine-schule {
+            background: linear-gradient(135deg, rgba(120, 120, 120, 0.2) 0%, rgba(90, 90, 90, 0.2) 100%);
+            color: #bdbdbd;
+            border: 2px solid rgba(120, 120, 120, 0.3);
+            font-style: italic;
+        }
+        
+        .cell-header {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+        
+        .planning-stats {
+            font-size: 0.75rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        
+        .student-count {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+        
+        .empty-slot {
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+            font-size: 0.8rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.15);
+            margin: 3% auto;
+            padding: 32px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        .modal h3 {
+            margin-bottom: 24px;
+            color: #ffd700;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .close {
+            color: rgba(255, 255, 255, 0.7);
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            margin-top: -8px;
+        }
+        
+        .close:hover {
+            color: #fff;
+        }
+        
+        .overview-section {
+            margin-bottom: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .overview-section h4 {
+            color: #ffd700;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        
+        .teacher-content {
+            background: rgba(255, 215, 0, 0.15);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .teacher-content h5 {
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .student-card {
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .student-card:hover {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: rgba(33, 150, 243, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .student-name {
+            color: #81d4fa;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .student-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .student-subject {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .student-notes {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .no-plans {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .legend {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 24px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .legend h3 {
+            margin-bottom: 16px;
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        
+        .legend-item span {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+            
+            .schedule-container {
+                padding: 24px 20px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 100px repeat(5, 1fr);
+                gap: 4px;
+                padding: 16px;
+            }
+            
+            .time-slot, .day-header, .lesson-cell {
+                min-height: 60px;
+                font-size: 0.8rem;
+            }
+            
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="refresh-btn" onclick="refreshData()">
+                <span>🔄</span>
+                <span>Aktualisieren</span>
+            </button>
+            <div class="header-content">
+                <h1>SOL Lehrerübersicht</h1>
+                <p>Monitoring der Schülerplanungen</p>
+            </div>
+        </div>
+        
+        <div class="schedule-container">
+            <div class="schedule-grid" id="scheduleGrid">
+                <!-- Grid wird dynamisch gefüllt -->
+            </div>
+            
+            <div class="legend">
+                <h3>Legende</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 193, 7, 0.8) 100%);"></div>
+                    <span>Nur Lehrervorgabe (keine Schülerplanungen)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(33, 150, 243, 0.8) 0%, rgba(25, 118, 210, 0.8) 100%);"></div>
+                    <span>Nur Schülerplanungen (keine Lehrervorgabe)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.8) 0%, rgba(123, 31, 162, 0.8) 100%);"></div>
+                    <span>Gemischt (Lehrervorgabe + Schülerplanungen)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(255, 255, 255, 0.1); border: 2px dashed rgba(255, 255, 255, 0.3);"></div>
+                    <span>Freie SOL-Zeit (keine Planungen)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(56, 142, 60, 0.25) 100%); border: 2px solid rgba(76, 175, 80, 0.4);"></div>
+                    <span>Regulärer Unterricht</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Zeitslot-Details -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDetailModal()">&times;</span>
+            <h3 id="modalTitle">Zeitslot Details</h3>
+            
+            <div class="stats-summary" id="statsSummary">
+                <!-- Statistiken werden hier eingefügt -->
+            </div>
+            
+            <div id="modalContent">
+                <!-- Inhalte werden hier dynamisch eingefügt -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        // Firebase Konfiguration
+        const firebaseConfig = {
+            databaseURL: "https://wortartenspiele-default-rtdb.europe-west1.firebasedatabase.app/"
+        };
+        
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Globale Variablen
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+        const timeSlots = [
+            '07:30-08:15', 
+            '08:20-09:05', 
+            '09:10-09:55', 
+            { time: '09:55-10:20', type: 'pause', label: 'PAUSE' },
+            '10:20-11:05', 
+            '11:10-11:55', 
+            { time: '11:55-13:50', type: 'mittag', label: 'MITTAG' },
+            '13:50-14:35', 
+            '14:40-15:25', 
+            '15:40-16:25', 
+            '16:30-17:15'
+        ];
+        
+        // Gesperrte Zeitslots pro Tag
+        const blockedSlots = {
+            'Montag': {
+                '07:30-08:15': 'Klassenwettkampf',
+                '13:50-14:35': 'RZG',
+                '14:40-15:25': 'RZG',
+                '15:40-16:25': 'Keine Schule',
+                '16:30-17:15': 'Keine Schule'
+            },
+            'Dienstag': {
+                '08:20-09:05': 'NT / MI',
+                '09:10-09:55': 'NT / MI',
+                '13:50-14:35': 'WAH',
+                '14:40-15:25': 'WAH',
+                '15:40-16:25': 'Keine Schule',
+                '16:30-17:15': 'Keine Schule'
+            },
+            'Mittwoch': {
+                '10:20-11:05': 'Sport',
+                '11:10-11:55': 'ERG',
+                '13:50-14:35': 'Keine Schule',
+                '14:40-15:25': 'Keine Schule',
+                '15:40-16:25': 'Keine Schule',
+                '16:30-17:15': 'Keine Schule'
+            },
+            'Donnerstag': {
+                '13:50-14:35': 'Musik',
+                '14:40-15:25': 'Musik',
+                '15:40-16:25': 'Keine Schule',
+                '16:30-17:15': 'Keine Schule'
+            },
+            'Freitag': {
+                '10:20-11:05': 'Sport',
+                '11:10-11:55': 'Sport',
+                '13:50-14:35': 'BG',
+                '14:40-15:25': 'BG',
+                '15:40-16:25': 'TTG / TxG',
+                '16:30-17:15': 'TTG / TxG'
+            }
+        };
+        
+        // Fachfarben-Mapping für regulären Unterricht
+        const subjectColors = {
+            'Klassenwettkampf': 'subject-klassenwettkampf',
+            'RZG': 'subject-rzg',
+            'NT / MI': 'subject-nt-mi',
+            'WAH': 'subject-wah',
+            'Sport': 'subject-sport',
+            'ERG': 'subject-erg',
+            'Musik': 'subject-musik',
+            'BG': 'subject-bg',
+            'TTG / TxG': 'subject-ttg-txg',
+            'Keine Schule': 'subject-keine-schule'
+        };
+        
+        let teacherLessons = {};
+        let allStudentPlans = {};
+        let isLoading = false;
+        
+        function createScheduleGrid() {
+            const grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = '';
+            
+            // Eckzelle
+            const cornerCell = document.createElement('div');
+            cornerCell.className = 'time-slot';
+            cornerCell.style.background = 'rgba(255, 255, 255, 0.15)';
+            grid.appendChild(cornerCell);
+            
+            // Tag-Header
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = day;
+                grid.appendChild(dayHeader);
+            });
+            
+            // Zeitslots und Zellen
+            timeSlots.forEach(timeSlot => {
+                const isBreak = typeof timeSlot === 'object';
+                const time = isBreak ? timeSlot.time : timeSlot;
+                
+                // Zeit-Header
+                const timeHeader = document.createElement('div');
+                if (isBreak) {
+                    timeHeader.className = timeSlot.type === 'pause' ? 'time-slot pause-break' : 'time-slot mittag-break';
+                    timeHeader.textContent = timeSlot.label;
+                } else {
+                    timeHeader.className = 'time-slot';
+                    timeHeader.textContent = time;
+                }
+                grid.appendChild(timeHeader);
+                
+                // Zellen für jeden Tag
+                days.forEach(day => {
+                    const cell = document.createElement('div');
+                    cell.dataset.day = day;
+                    cell.dataset.time = time;
+                    
+                    if (isBreak) {
+                        cell.className = 'lesson-cell break-cell';
+                        cell.textContent = timeSlot.label;
+                    } else {
+                        const isBlocked = blockedSlots[day] && blockedSlots[day][time];
+                        
+                        if (isBlocked) {
+                            const subjectName = blockedSlots[day][time];
+                            const colorClass = subjectColors[subjectName] || 'blocked-cell';
+                            cell.className = `lesson-cell blocked-cell ${colorClass}`;
+                            cell.textContent = subjectName;
+                        } else {
+                            cell.className = 'lesson-cell clickable';
+                            cell.addEventListener('click', () => openDetailModal(day, time));
+                        }
+                    }
+                    
+                    grid.appendChild(cell);
+                });
+            });
+        }
+        
+        function loadData() {
+            if (isLoading) return;
+            isLoading = true;
+            
+            console.log('Lade Daten...');
+            
+            // Lehrer-Lektionen laden
+            database.ref('sol-stundenplan').once('value')
+                .then((snapshot) => {
+                    teacherLessons = snapshot.val() || {};
+                    console.log(`Lehrer-Lektionen geladen: ${Object.keys(teacherLessons).length} Einträge`);
+                    
+                    // Schüler-Planungen laden
+                    return database.ref('student-plans').once('value');
+                })
+                .then((snapshot) => {
+                    allStudentPlans = snapshot.val() || {};
+                    console.log(`Schüler-Planungen geladen: ${Object.keys(allStudentPlans).length} Schüler`);
+                    
+                    // Schedule rendern
+                    renderSchedule();
+                    isLoading = false;
+                })
+                .catch((error) => {
+                    console.error('Fehler beim Laden der Daten:', error);
+                    isLoading = false;
+                });
+        }
+        
+        function renderSchedule() {
+            days.forEach(day => {
+                timeSlots.forEach(timeSlot => {
+                    const isBreak = typeof timeSlot === 'object';
+                    if (isBreak) return;
+                    
+                    const time = timeSlot;
+                    const isBlocked = blockedSlots[day] && blockedSlots[day][time];
+                    if (isBlocked) return;
+                    
+                    updateCell(day, time);
+                });
+            });
+        }
+        
+        function updateCell(day, time) {
+            const cell = document.querySelector(`[data-day="${day}"][data-time="${time}"]`);
+            if (!cell) return;
+            
+            const lessonKey = `${day}-${time}`;
+            const teacherLesson = teacherLessons[lessonKey];
+            
+            // Schüler-Planungen für diesen Zeitslot sammeln
+            const studentPlansForSlot = [];
+            Object.keys(allStudentPlans).forEach(studentId => {
+                const studentData = allStudentPlans[studentId];
+                if (studentData && studentData[lessonKey]) {
+                    studentPlansForSlot.push({
+                        studentId,
+                        ...studentData[lessonKey]
+                    });
+                }
+            });
+            
+            const hasTeacherContent = teacherLesson && (teacherLesson.title || teacherLesson.subject);
+            const hasStudentPlans = studentPlansForSlot.length > 0;
+            
+            // Zell-Styling basierend auf Inhalt
+            if (hasTeacherContent && hasStudentPlans) {
+                cell.className = 'lesson-cell clickable mixed-content';
+            } else if (hasTeacherContent) {
+                cell.className = 'lesson-cell clickable has-teacher-content';
+            } else if (hasStudentPlans) {
+                cell.className = 'lesson-cell clickable has-student-plans';
+            } else {
+                cell.className = 'lesson-cell clickable';
+            }
+            
+            // Zell-Inhalt
+            let cellContent = '';
+            
+            if (hasTeacherContent) {
+                cellContent += `<div class="cell-header">SOL (Lehrer)</div>`;
+                if (teacherLesson.subject) {
+                    cellContent += `<div class="planning-stats">${teacherLesson.subject}</div>`;
+                }
+            }
+            
+            if (hasStudentPlans) {
+                cellContent += `<div class="cell-header">${hasTeacherContent ? 'Zusätzlich:' : 'SOL'}</div>`;
+                cellContent += `<div class="student-count">${studentPlansForSlot.length} Schüler geplant</div>`;
+            }
+            
+            if (!hasTeacherContent && !hasStudentPlans) {
+                cellContent = `<div class="empty-slot">Keine Planungen</div>`;
+            }
+            
+            cell.innerHTML = cellContent;
+        }
+        
+        function openDetailModal(day, time) {
+            const lessonKey = `${day}-${time}`;
+            const teacherLesson = teacherLessons[lessonKey];
+            
+            // Schüler-Planungen sammeln
+            const studentPlansForSlot = [];
+            Object.keys(allStudentPlans).forEach(studentId => {
+                const studentData = allStudentPlans[studentId];
+                if (studentData && studentData[lessonKey]) {
+                    studentPlansForSlot.push({
+                        studentId,
+                        studentName: getStudentNameFromId(studentId),
+                        ...studentData[lessonKey]
+                    });
+                }
+            });
+            
+            // Modal-Titel
+            document.getElementById('modalTitle').textContent = `${day}, ${time}`;
+            
+            // Statistiken
+            const totalStudents = 20; // Gesamtanzahl Schüler in der Klasse
+            const plannedStudents = studentPlansForSlot.length;
+            const notPlannedStudents = totalStudents - plannedStudents;
+            
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-number">${plannedStudents}</div>
+                    <div class="stat-label">Schüler geplant</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${notPlannedStudents}</div>
+                    <div class="stat-label">Schüler nicht geplant</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${Math.round((plannedStudents / totalStudents) * 100)}%</div>
+                    <div class="stat-label">Planungsquote</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${teacherLesson ? 'Ja' : 'Nein'}</div>
+                    <div class="stat-label">Lehrervorgabe</div>
+                </div>
+            `;
+            document.getElementById('statsSummary').innerHTML = statsHtml;
+            
+            // Modal-Inhalt
+            let modalContent = '';
+            
+            // Lehrer-Inhalt
+            if (teacherLesson && (teacherLesson.title || teacherLesson.subject)) {
+                modalContent += `
+                    <div class="overview-section">
+                        <h4>🏆 Lehrervorgabe</h4>
+                        <div class="teacher-content">
+                            <h5>${teacherLesson.title || 'SOL'}</h5>
+                            ${teacherLesson.subject ? `<p><strong>Fach:</strong> ${teacherLesson.subject}</p>` : ''}
+                            ${teacherLesson.notes ? `<p><strong>Hinweise:</strong> ${teacherLesson.notes}</p>` : ''}
+                            ${teacherLesson.files && teacherLesson.files.length > 0 ? 
+                                `<p><strong>Dateien:</strong> ${teacherLesson.files.map(f => f.name).join(', ')}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Schüler-Planungen
+            if (studentPlansForSlot.length > 0) {
+                modalContent += `
+                    <div class="overview-section">
+                        <h4>👥 Schülerplanungen (${studentPlansForSlot.length})</h4>
+                        <div class="students-grid">
+                `;
+                
+                // Sortiere Schüler alphabetisch
+                studentPlansForSlot.sort((a, b) => a.studentName.localeCompare(b.studentName));
+                
+                studentPlansForSlot.forEach(plan => {
+                    modalContent += `
+                        <div class="student-card">
+                            <div class="student-name">${plan.studentName}</div>
+                            ${plan.title ? `<div class="student-title">${plan.title}</div>` : ''}
+                            ${plan.subject ? `<div class="student-subject">${plan.subject}</div>` : ''}
+                            ${plan.notes ? `<div class="student-notes">${plan.notes}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                modalContent += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Wenn keine Planungen vorhanden
+            if (!teacherLesson && studentPlansForSlot.length === 0) {
+                modalContent = `
+                    <div class="no-plans">
+                        <h4>📭 Keine Planungen vorhanden</h4>
+                        <p>Für diesen Zeitslot gibt es weder eine Lehrervorgabe noch Schülerplanungen.</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('detailModal').style.display = 'block';
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+        
+        function getStudentNameFromId(studentId) {
+            // Mapping von Student-IDs zu Namen (basierend auf den Anmeldedaten)
+            const studentNames = {
+                'adele': 'Adele',
+                'amen': 'Amen',
+                'andrin': 'Andrin',
+                'cedric': 'Cédric',
+                'elena': 'Elena',
+                'eline': 'Eline',
+                'emaad': 'Emaad',
+                'hilal': 'Hilal',
+                'ian': 'Ian',
+                'ines': 'Inês',
+                'jamain': 'Jamain',
+                'jan': 'Jan',
+                'jovana': 'Jovana',
+                'lucy': 'Lucy',
+                'max': 'Max',
+                'milana': 'Milana',
+                'renas': 'Renas',
+                'samuel': 'Samuel',
+                'vian': 'Vian',
+                'vleron': 'Vleron'
+            };
+            
+            return studentNames[studentId] || studentId;
+        }
+        
+        function refreshData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.style.transform = 'rotate(360deg)';
+            btn.disabled = true;
+            
+            loadData();
+            
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+                btn.disabled = false;
+            }, 1000);
+        }
+        
+        // Event Listeners
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeDetailModal();
+            }
+        }
+        
+        // Keyboard Navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDetailModal();
+            }
+        });
+        
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initialisiere Lehrerübersicht...');
+            createScheduleGrid();
+            loadData();
+            
+            // Auto-Refresh alle 30 Sekunden
+            setInterval(() => {
+                if (!document.getElementById('detailModal').style.display || 
+                    document.getElementById('detailModal').style.display === 'none') {
+                    loadData();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
