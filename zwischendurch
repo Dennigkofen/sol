@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abenteuer Lernhub - Zwischendurch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.7; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffd700, #ff6b35);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .adventure-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(247, 147, 30, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Grid Layout for Categories */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .category {
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Color Themes for Categories */
+        .category.languages {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.95) 0%, rgba(129, 199, 132, 0.95) 100%);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .category.geography {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.95) 0%, rgba(100, 181, 246, 0.95) 100%);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .category.mathematics {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.95) 0%, rgba(186, 104, 200, 0.95) 100%);
+            border: 2px solid rgba(156, 39, 176, 0.3);
+        }
+
+        .category.media-it {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.95) 0%, rgba(255, 183, 77, 0.95) 100%);
+            border: 2px solid rgba(255, 152, 0, 0.3);
+        }
+
+        .category::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .category:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+        }
+
+        .category-icon {
+            font-size: 2.2rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-description {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            line-height: 1.3;
+        }
+
+        .play-button {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .play-button {
+            background: rgba(255, 255, 255, 0.4);
+            transform: rotate(360deg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .category {
+                padding: 1.5rem;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-card {
+                padding: 1.2rem;
+            }
+        }
+
+        /* Floating elements */
+        .floating-element {
+            position: fixed;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            animation: floatAround 8s ease-in-out infinite;
+        }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(90deg); }
+            50% { transform: translate(-10px, -40px) rotate(180deg); }
+            75% { transform: translate(-30px, -10px) rotate(270deg); }
+        }
+
+        /* Category Color Legend */
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .legend-color.languages { background: #4CAF50; }
+        .legend-color.geography { background: #2196F3; }
+        .legend-color.mathematics { background: #9C27B0; }
+        .legend-color.media-it { background: #FF9800; }
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Floating elements -->
+    <div class="floating-element" style="top: 10%; left: 10%; animation-delay: 0s;">🎯</div>
+    <div class="floating-element" style="top: 20%; right: 15%; animation-delay: 1s;">🎮</div>
+    <div class="floating-element" style="bottom: 20%; left: 20%; animation-delay: 2s;">⭐</div>
+    <div class="floating-element" style="bottom: 30%; right: 10%; animation-delay: 3s;">🚀</div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">Abenteuer Lernhub</h1>
+            <p class="subtitle">Spannende Daily-Challenge-Spiele für zwischendurch</p>
+            <div class="adventure-badge">Bereit für das Abenteuer?</div>
+        </header>
+
+        <!-- Color Legend -->
+        <div class="color-legend">
+            <div class="legend-item">
+                <div class="legend-color languages"></div>
+                <span>Sprachen</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color geography"></div>
+                <span>Geografie</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color mathematics"></div>
+                <span>Mathematik</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color media-it"></div>
+                <span>Medien & IT</span>
+            </div>
+        </div>
+
+        <main class="categories-grid">
+            <!-- Sprachen Kategorie -->
+            <section class="category languages">
+                <h2 class="category-title">
+                    <span class="category-icon">🌍</span>
+                    Sprachen
+                </h2>
+                <div class="games-grid">
+                    <a href="https://www.nytimes.com/games/wordle/index.html" class="game-card" target="_blank">
+                        <h3 class="game-title">Wordle Englisch</h3>
+                        <p class="game-description">Das berühmte Wörter-Rätsel auf Englisch</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.xn--wrdle-jua.de/" class="game-card" target="_blank">
+                        <h3 class="game-title">Wordle Deutsch</h3>
+                        <p class="game-description">Erratet das deutsche Wort in 6 Versuchen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://wordle.louan.me/" class="game-card" target="_blank">
+                        <h3 class="game-title">Wordle Français</h3>
+                        <p class="game-description">Le jeu de mots français populaire</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.buchstaben.com/spiele/raetsel/connections" class="game-card" target="_blank">
+                        <h3 class="game-title">Connections Deutsch</h3>
+                        <p class="game-description">Findet die Verbindungen zwischen Wörtern</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://connectionsgame.org/" class="game-card" target="_blank">
+                        <h3 class="game-title">Connections English</h3>
+                        <p class="game-description">Find connections between words</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- NMG (Geografie) Kategorie -->
+            <section class="category geography">
+                <h2 class="category-title">
+                    <span class="category-icon">🗺️</span>
+                    NMG (Geografie)
+                </h2>
+                <div class="games-grid">
+                    <a href="https://worldle.teuteuf.fr/" class="game-card" target="_blank">
+                        <h3 class="game-title">Worldle</h3>
+                        <p class="game-description">Tägliches Rätsel: Land anhand Umrisse erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.geogridgame.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">GeoGrid</h3>
+                        <p class="game-description">Täglich: Länder in einem Raster erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://globle-game.com/game" class="game-card" target="_blank">
+                        <h3 class="game-title">Globle</h3>
+                        <p class="game-description">Daily: Verstecktes Land auf dem Globus finden</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.flagle.io/" class="game-card" target="_blank">
+                        <h3 class="game-title">Flagle</h3>
+                        <p class="game-description">Täglich: Flagge des Landes erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://flagle-game.com/daily" class="game-card" target="_blank">
+                        <h3 class="game-title">Flagle Daily</h3>
+                        <p class="game-description">Alternative tägliche Flaggen-Challenge</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://timeguessr.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">TimeGuessr</h3>
+                        <p class="game-description">Daily: Jahr und Ort von Fotos erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.countryle.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Countryle</h3>
+                        <p class="game-description">Täglich: Land mit geografischen Hinweisen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Mathematik Kategorie -->
+            <section class="category mathematics">
+                <h2 class="category-title">
+                    <span class="category-icon">🧮</span>
+                    Mathematik
+                </h2>
+                <div class="games-grid">
+                    <a href="https://nerdlegame.com/?v=20250326002" class="game-card" target="_blank">
+                        <h3 class="game-title">Nerdle Classic</h3>
+                        <p class="game-description">Täglich: Mathematische Gleichung erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://nerdlegame.com/crossnerdle?st=30#v=00004" class="game-card" target="_blank">
+                        <h3 class="game-title">CrossNerdle</h3>
+                        <p class="game-description">Daily: Mathe-Kreuzworträtsel</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://nerdlegame.com/s/targets/level1?st=55" class="game-card" target="_blank">
+                        <h3 class="game-title">Nerdle Targets</h3>
+                        <p class="game-description">Täglich: Zielzahlen mit Rechnungen erreichen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.mathler.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Mathler</h3>
+                        <p class="game-description">Daily: Finde die richtige Rechenweise</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://mathlegame.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Mathle</h3>
+                        <p class="game-description">Täglich: Einfache Addition/Subtraktion erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.mathdle-daily.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Mathdle</h3>
+                        <p class="game-description">Daily: Neue Mathe-Herausforderung</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://numberle.org/" class="game-card" target="_blank">
+                        <h3 class="game-title">Numberle</h3>
+                        <p class="game-description">Daily: Mathematische Gleichung in 6 Versuchen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://engaging-data.com/digitsgame/" class="game-card" target="_blank">
+                        <h3 class="game-title">Digits Game</h3>
+                        <p class="game-description">Täglich: NYT-Stil Zahlenrätsel (5 Puzzles)</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://beastacademy.com/all-ten" class="game-card" target="_blank">
+                        <h3 class="game-title">All Ten</h3>
+                        <p class="game-description">Daily: Mit 4 Zahlen die Werte 1-10 bilden</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Medien und Informatik Kategorie -->
+            <section class="category media-it">
+                <h2 class="category-title">
+                    <span class="category-icon">🎬</span>
+                    Medien & Informatik
+                </h2>
+                <div class="games-grid">
+                    <a href="https://heardlewordle.io/" class="game-card" target="_blank">
+                        <h3 class="game-title">Heardle</h3>
+                        <p class="game-description">Daily: Lied anhand kurzer Clips erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://guessthe.game/" class="game-card" target="_blank">
+                        <h3 class="game-title">Guess The Game</h3>
+                        <p class="game-description">Täglich: Videospiel anhand von Screenshots</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.chess.com/daily-chess-puzzle" class="game-card" target="_blank">
+                        <h3 class="game-title">Chess Daily Puzzle</h3>
+                        <p class="game-description">Daily: Schach-Rätsel und Taktikaufgaben</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://framed.wtf" class="game-card" target="_blank">
+                        <h3 class="game-title">Framed</h3>
+                        <p class="game-description">Daily: Film anhand von Bildern erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://moviedle.io/" class="game-card" target="_blank">
+                        <h3 class="game-title">Moviedle</h3>
+                        <p class="game-description">Täglich: Film anhand kurzer Video-Clips</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://flickle.app/" class="game-card" target="_blank">
+                        <h3 class="game-title">Flickle</h3>
+                        <p class="game-description">Daily: Film aus Video-Clips erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.cinenerdle2.app/" class="game-card" target="_blank">
+                        <h3 class="game-title">Cine2Nerdle</h3>
+                        <p class="game-description">Daily: Film-Rätsel und Verbindungen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Add hover sound effect simulation
+        const gameCards = document.querySelectorAll('.game-card');
+        gameCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'scale(1.02) rotateX(2deg)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'scale(1) rotateX(0deg)';
+            });
+        });
+
+        // Initialize particles when page loads
+        document.addEventListener('DOMContentLoaded', createParticles);
+
+        // Add some interactive elements
+        document.addEventListener('mousemove', (e) => {
+            const cursor = e.clientX / window.innerWidth;
+            const particles = document.querySelectorAll('.particle');
+            
+            particles.forEach((particle, index) => {
+                if (index % 5 === 0) { // Only affect every 5th particle for performance
+                    const speed = (cursor - 0.5) * 20;
+                    particle.style.transform = `translateX(${speed}px)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
