@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Für Zwischendurch</title>
+    <title>Für zwischendurch- Zwischendurch</title>
     <style>
         * {
             margin: 0;
@@ -149,11 +149,6 @@
             border: 2px solid rgba(255, 152, 0, 0.3);
         }
 
-        .category.science {
-            background: linear-gradient(135deg, rgba(233, 30, 99, 0.95) 0%, rgba(240, 98, 146, 0.95) 100%);
-            border: 2px solid rgba(233, 30, 99, 0.3);
-        }
-
         .category.art-culture {
             background: linear-gradient(135deg, rgba(0, 188, 212, 0.95) 0%, rgba(77, 208, 225, 0.95) 100%);
             border: 2px solid rgba(0, 188, 212, 0.3);
@@ -167,11 +162,6 @@
         .category.sports {
             background: linear-gradient(135deg, rgba(255, 87, 34, 0.95) 0%, rgba(255, 138, 101, 0.95) 100%);
             border: 2px solid rgba(255, 87, 34, 0.3);
-        }
-
-        .category.health {
-            background: linear-gradient(135deg, rgba(96, 125, 139, 0.95) 0%, rgba(144, 164, 174, 0.95) 100%);
-            border: 2px solid rgba(96, 125, 139, 0.3);
         }
 
         .category::before {
@@ -407,11 +397,9 @@
         .legend-color.geography { background: #2196F3; }
         .legend-color.mathematics { background: #9C27B0; }
         .legend-color.media-it { background: #FF9800; }
-        .legend-color.science { background: #E91E63; }
         .legend-color.art-culture { background: #00BCD4; }
         .legend-color.knowledge { background: #8BC34A; }
         .legend-color.sports { background: #FF5722; }
-        .legend-color.health { background: #607D8B; }
 
         /* Category filtering */
         .category.hidden {
@@ -437,7 +425,7 @@
         <header class="header">
             <h1 class="main-title">Für zwischendurch</h1>
             <p class="subtitle">Daily-Challenge-Spiele für zwischendurch</p>
-            <div class="adventure-badge">Etwas Ablenkung gefällig?</div>
+            <div class="adventure-badge">Ablenkung gefällig?</div>
         </header>
 
         <!-- Color Legend -->
@@ -458,10 +446,6 @@
                 <div class="legend-color media-it"></div>
                 <span>Medien & IT</span>
             </div>
-            <div class="legend-item" data-category="science">
-                <div class="legend-color science"></div>
-                <span>Naturwissenschaften</span>
-            </div>
             <div class="legend-item" data-category="art-culture">
                 <div class="legend-color art-culture"></div>
                 <span>Kunst & Kultur</span>
@@ -473,10 +457,6 @@
             <div class="legend-item" data-category="sports">
                 <div class="legend-color sports"></div>
                 <span>Sport</span>
-            </div>
-            <div class="legend-item" data-category="health">
-                <div class="legend-color health"></div>
-                <span>Gesundheit</span>
             </div>
         </div>
 
@@ -608,12 +588,6 @@
                         <div class="play-button">▶</div>
                     </a>
                     
-                    <a href="https://www.mathdle-daily.com/" class="game-card" target="_blank">
-                        <h3 class="game-title">Mathdle</h3>
-                        <p class="game-description">Daily: Neue Mathe-Herausforderung</p>
-                        <div class="play-button">▶</div>
-                    </a>
-                    
                     <a href="https://numberle.org/" class="game-card" target="_blank">
                         <h3 class="game-title">Numberle</h3>
                         <p class="game-description">Daily: Mathematische Gleichung in 6 Versuchen</p>
@@ -685,33 +659,6 @@
                 </div>
             </section>
 
-            <!-- Naturwissenschaften Kategorie -->
-            <section class="category science">
-                <h2 class="category-title">
-                    <span class="category-icon">🧪</span>
-                    Naturwissenschaften
-                </h2>
-                <div class="games-grid">
-                    <a href="https://metazooa.com" class="game-card" target="_blank">
-                        <h3 class="game-title">Metazooa</h3>
-                        <p class="game-description">Daily: Tier anhand Taxonomie erraten</p>
-                        <div class="play-button">▶</div>
-                    </a>
-                    
-                    <a href="https://flora.metazooa.com/" class="game-card" target="_blank">
-                        <h3 class="game-title">Metaflora</h3>
-                        <p class="game-description">Täglich: Pflanze anhand Klassifikation</p>
-                        <div class="play-button">▶</div>
-                    </a>
-                    
-                    <a href="https://atomple.com/" class="game-card" target="_blank">
-                        <h3 class="game-title">Atomple</h3>
-                        <p class="game-description">Daily: Chemisches Element erraten</p>
-                        <div class="play-button">▶</div>
-                    </a>
-                </div>
-            </section>
-
             <!-- Kunst & Kultur Kategorie -->
             <section class="category art-culture">
                 <h2 class="category-title">
@@ -746,12 +693,6 @@
                     Allgemeinwissen
                 </h2>
                 <div class="games-grid">
-                    <a href="https://frontofficesports.com/trivia/factle/" class="game-card" target="_blank">
-                        <h3 class="game-title">Factle</h3>
-                        <p class="game-description">Daily: Fakten in richtige Reihenfolge bringen</p>
-                        <div class="play-button">▶</div>
-                    </a>
-                    
                     <a href="https://quordle.com/" class="game-card" target="_blank">
                         <h3 class="game-title">Quordle</h3>
                         <p class="game-description">Täglich: 4 Wörter gleichzeitig erraten</p>
@@ -785,36 +726,15 @@
                         <div class="play-button">▶</div>
                     </a>
                     
-                    <a href="https://www.footdle.io/" class="game-card" target="_blank">
+                    <a href="https://footdle.com/" class="game-card" target="_blank">
                         <h3 class="game-title">Footdle</h3>
                         <p class="game-description">Daily: Fußball-Spieler und Teams</p>
                         <div class="play-button">▶</div>
                     </a>
-                </div>
-            </section>
-
-            <!-- Gesundheit & Ernährung Kategorie -->
-            <section class="category health">
-                <h2 class="category-title">
-                    <span class="category-icon">🍎</span>
-                    Gesundheit & Ernährung
-                </h2>
-                <div class="games-grid">
-                    <a href="https://foodle.wordle-api.io/" class="game-card" target="_blank">
-                        <h3 class="game-title">Foodle</h3>
-                        <p class="game-description">Daily: Lebensmittel und Rezepte erraten</p>
-                        <div class="play-button">▶</div>
-                    </a>
                     
-                    <a href="https://www.nutrition.gov/topics/whats-food/play-myplate-games" class="game-card" target="_blank">
-                        <h3 class="game-title">MyPlate Games</h3>
-                        <p class="game-description">Täglich: Ernährungs-Wissensquiz</p>
-                        <div class="play-button">▶</div>
-                    </a>
-                    
-                    <a href="https://www.healthline.com/nutrition/quiz" class="game-card" target="_blank">
-                        <h3 class="game-title">Nutrition Quiz</h3>
-                        <p class="game-description">Daily: Gesundheits- und Ernährungsfragen</p>
+                    <a href="https://austinkrance.com/pages/sportsunder150" class="game-card" target="_blank">
+                        <h3 class="game-title">Sports Under 150</h3>
+                        <p class="game-description">Daily: Sport-Rankings unter 150 erraten</p>
                         <div class="play-button">▶</div>
                     </a>
                 </div>
