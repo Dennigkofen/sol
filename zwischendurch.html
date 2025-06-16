@@ -149,6 +149,31 @@
             border: 2px solid rgba(255, 152, 0, 0.3);
         }
 
+        .category.science {
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.95) 0%, rgba(240, 98, 146, 0.95) 100%);
+            border: 2px solid rgba(233, 30, 99, 0.3);
+        }
+
+        .category.art-culture {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.95) 0%, rgba(77, 208, 225, 0.95) 100%);
+            border: 2px solid rgba(0, 188, 212, 0.3);
+        }
+
+        .category.knowledge {
+            background: linear-gradient(135deg, rgba(139, 195, 74, 0.95) 0%, rgba(174, 213, 129, 0.95) 100%);
+            border: 2px solid rgba(139, 195, 74, 0.3);
+        }
+
+        .category.sports {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.95) 0%, rgba(255, 138, 101, 0.95) 100%);
+            border: 2px solid rgba(255, 87, 34, 0.3);
+        }
+
+        .category.health {
+            background: linear-gradient(135deg, rgba(96, 125, 139, 0.95) 0%, rgba(144, 164, 174, 0.95) 100%);
+            border: 2px solid rgba(96, 125, 139, 0.3);
+        }
+
         .category::before {
             content: '';
             position: absolute;
@@ -350,6 +375,26 @@
             color: white;
             font-size: 0.9rem;
             backdrop-filter: blur(5px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .legend-item.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .legend-item.inactive {
+            opacity: 0.5;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .legend-color {
@@ -362,6 +407,20 @@
         .legend-color.geography { background: #2196F3; }
         .legend-color.mathematics { background: #9C27B0; }
         .legend-color.media-it { background: #FF9800; }
+        .legend-color.science { background: #E91E63; }
+        .legend-color.art-culture { background: #00BCD4; }
+        .legend-color.knowledge { background: #8BC34A; }
+        .legend-color.sports { background: #FF5722; }
+        .legend-color.health { background: #607D8B; }
+
+        /* Category filtering */
+        .category.hidden {
+            display: none;
+        }
+
+        .categories-grid.filtered {
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        }
     </style>
 </head>
 <body>
@@ -383,21 +442,41 @@
 
         <!-- Color Legend -->
         <div class="color-legend">
-            <div class="legend-item">
+            <div class="legend-item" data-category="languages">
                 <div class="legend-color languages"></div>
                 <span>Sprachen</span>
             </div>
-            <div class="legend-item">
+            <div class="legend-item" data-category="geography">
                 <div class="legend-color geography"></div>
                 <span>Geografie</span>
             </div>
-            <div class="legend-item">
+            <div class="legend-item" data-category="mathematics">
                 <div class="legend-color mathematics"></div>
                 <span>Mathematik</span>
             </div>
-            <div class="legend-item">
+            <div class="legend-item" data-category="media-it">
                 <div class="legend-color media-it"></div>
                 <span>Medien & IT</span>
+            </div>
+            <div class="legend-item" data-category="science">
+                <div class="legend-color science"></div>
+                <span>Naturwissenschaften</span>
+            </div>
+            <div class="legend-item" data-category="art-culture">
+                <div class="legend-color art-culture"></div>
+                <span>Kunst & Kultur</span>
+            </div>
+            <div class="legend-item" data-category="knowledge">
+                <div class="legend-color knowledge"></div>
+                <span>Allgemeinwissen</span>
+            </div>
+            <div class="legend-item" data-category="sports">
+                <div class="legend-color sports"></div>
+                <span>Sport</span>
+            </div>
+            <div class="legend-item" data-category="health">
+                <div class="legend-color health"></div>
+                <span>Gesundheit</span>
             </div>
         </div>
 
@@ -605,6 +684,141 @@
                     </a>
                 </div>
             </section>
+
+            <!-- Naturwissenschaften Kategorie -->
+            <section class="category science">
+                <h2 class="category-title">
+                    <span class="category-icon">🧪</span>
+                    Naturwissenschaften
+                </h2>
+                <div class="games-grid">
+                    <a href="https://metazooa.com" class="game-card" target="_blank">
+                        <h3 class="game-title">Metazooa</h3>
+                        <p class="game-description">Daily: Tier anhand Taxonomie erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://flora.metazooa.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Metaflora</h3>
+                        <p class="game-description">Täglich: Pflanze anhand Klassifikation</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://atomple.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Atomple</h3>
+                        <p class="game-description">Daily: Chemisches Element erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Kunst & Kultur Kategorie -->
+            <section class="category art-culture">
+                <h2 class="category-title">
+                    <span class="category-icon">🎨</span>
+                    Kunst & Kultur
+                </h2>
+                <div class="games-grid">
+                    <a href="https://www.nga.gov/artle" class="game-card" target="_blank">
+                        <h3 class="game-title">Artle</h3>
+                        <p class="game-description">Daily: Kunstwerk und Künstler erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://artle.uk/" class="game-card" target="_blank">
+                        <h3 class="game-title">Artle UK</h3>
+                        <p class="game-description">Täglich: Verstecktes Kunstwerk entdecken</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://histordle.com/yeardle/" class="game-card" target="_blank">
+                        <h3 class="game-title">Yeardle</h3>
+                        <p class="game-description">Daily: Jahr anhand historischer Ereignisse</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Allgemeinwissen Kategorie -->
+            <section class="category knowledge">
+                <h2 class="category-title">
+                    <span class="category-icon">🧠</span>
+                    Allgemeinwissen
+                </h2>
+                <div class="games-grid">
+                    <a href="https://frontofficesports.com/trivia/factle/" class="game-card" target="_blank">
+                        <h3 class="game-title">Factle</h3>
+                        <p class="game-description">Daily: Fakten in richtige Reihenfolge bringen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://quordle.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">Quordle</h3>
+                        <p class="game-description">Täglich: 4 Wörter gleichzeitig erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.britannica.com/games/revealed" class="game-card" target="_blank">
+                        <h3 class="game-title">Revealed</h3>
+                        <p class="game-description">Daily: Thema anhand versteckter Wörter</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Sport Kategorie -->
+            <section class="category sports">
+                <h2 class="category-title">
+                    <span class="category-icon">⚽</span>
+                    Sport
+                </h2>
+                <div class="games-grid">
+                    <a href="https://poeltl.dunk.town/" class="game-card" target="_blank">
+                        <h3 class="game-title">Poeltl</h3>
+                        <p class="game-description">Daily: Basketball-Spieler erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://hoopgrids.com/" class="game-card" target="_blank">
+                        <h3 class="game-title">HoopGrids</h3>
+                        <p class="game-description">Täglich: NBA Grid-Rätsel lösen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.footdle.io/" class="game-card" target="_blank">
+                        <h3 class="game-title">Footdle</h3>
+                        <p class="game-description">Daily: Fußball-Spieler und Teams</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Gesundheit & Ernährung Kategorie -->
+            <section class="category health">
+                <h2 class="category-title">
+                    <span class="category-icon">🍎</span>
+                    Gesundheit & Ernährung
+                </h2>
+                <div class="games-grid">
+                    <a href="https://foodle.wordle-api.io/" class="game-card" target="_blank">
+                        <h3 class="game-title">Foodle</h3>
+                        <p class="game-description">Daily: Lebensmittel und Rezepte erraten</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.nutrition.gov/topics/whats-food/play-myplate-games" class="game-card" target="_blank">
+                        <h3 class="game-title">MyPlate Games</h3>
+                        <p class="game-description">Täglich: Ernährungs-Wissensquiz</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                    
+                    <a href="https://www.healthline.com/nutrition/quiz" class="game-card" target="_blank">
+                        <h3 class="game-title">Nutrition Quiz</h3>
+                        <p class="game-description">Daily: Gesundheits- und Ernährungsfragen</p>
+                        <div class="play-button">▶</div>
+                    </a>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -639,6 +853,66 @@
 
         // Initialize particles when page loads
         document.addEventListener('DOMContentLoaded', createParticles);
+
+        // Category filtering functionality
+        let activeFilter = null;
+        const legendItems = document.querySelectorAll('.legend-item');
+        const categories = document.querySelectorAll('.category');
+        const categoriesGrid = document.querySelector('.categories-grid');
+
+        legendItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const categoryType = item.dataset.category;
+                
+                // If clicking the same filter, reset to show all
+                if (activeFilter === categoryType) {
+                    activeFilter = null;
+                    showAllCategories();
+                } else {
+                    activeFilter = categoryType;
+                    filterCategories(categoryType);
+                }
+                
+                updateLegendStates();
+            });
+        });
+
+        function filterCategories(filterType) {
+            categories.forEach(category => {
+                if (category.classList.contains(filterType)) {
+                    category.classList.remove('hidden');
+                } else {
+                    category.classList.add('hidden');
+                }
+            });
+            categoriesGrid.classList.add('filtered');
+        }
+
+        function showAllCategories() {
+            categories.forEach(category => {
+                category.classList.remove('hidden');
+            });
+            categoriesGrid.classList.remove('filtered');
+        }
+
+        function updateLegendStates() {
+            legendItems.forEach(item => {
+                const categoryType = item.dataset.category;
+                
+                if (activeFilter === null) {
+                    // Show all - no special states
+                    item.classList.remove('active', 'inactive');
+                } else if (activeFilter === categoryType) {
+                    // This is the active filter
+                    item.classList.add('active');
+                    item.classList.remove('inactive');
+                } else {
+                    // This is not the active filter
+                    item.classList.add('inactive');
+                    item.classList.remove('active');
+                }
+            });
+        }
 
         // Add some interactive elements
         document.addEventListener('mousemove', (e) => {
